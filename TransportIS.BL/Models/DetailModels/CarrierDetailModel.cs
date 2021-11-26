@@ -21,4 +21,6 @@ namespace TransportIS.BL.Models.DetailModels
         public string? PublicRelationsContact { get; set; }
 
     }
+
+
 }

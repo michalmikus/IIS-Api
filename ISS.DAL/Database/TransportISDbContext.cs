@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,9 @@ namespace TransportIS.DAL
         public TransportISDbContext(DbContextOptions options) : base(options)
         {
         }
+        public DbSet<UserEntity>? Users { get; set; }
+
+        public DbSet<RoleEntity>? Roles { get; set; }
 
         public DbSet<CarrierEntity>? Carriers { get; set; }
 
@@ -28,13 +32,10 @@ namespace TransportIS.DAL
 
         public DbSet<TimeTableEntity>? TimeTables { get; set; }
 
-        /*
+       
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ConnectionEntity>()
-                .HasOne<CarrierEntity>()
-                .WithMany(ConnectionEntity => ConnectionEntity.)
+            modelBuilder.Entity<IdentityUserRole<Guid>>().HasKey(p => new { p.UserId, p.RoleId});
         }
-        */
     }
 }

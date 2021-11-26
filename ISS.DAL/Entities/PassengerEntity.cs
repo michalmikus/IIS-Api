@@ -9,13 +9,13 @@ namespace TransportIS.DAL.Entities
 {
     public class PassengerEntity : BaseEntity
     {
-        public string? CardNumber { get; set; }
+        public string? PhoneNumber { get; set; }
 
-        public string? ExpirationDate { get; set; }
-
-        public string? SecurityCode { get; set; }
+        public string? Email { get; set; }
 
         public AddressEntity? Address { get; set; }
+
+        public Guid TicketId { get; set; }
 
     }
 }

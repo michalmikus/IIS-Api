@@ -5,11 +5,13 @@ using TransportIS.BL.Models.DetailModels;
 using TransportIS.BL.Repository;
 using AutoMapper;
 using TransportIS.DAL;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace TransportIS.Web.Controlers
 {
+
     [Route("api/carrier/{carrierId}/connections")]
     [ApiController]
     public class ConnectionControler : ControllerBase
@@ -23,8 +25,8 @@ namespace TransportIS.Web.Controlers
             this.mapper = mapper;
         }
         // GET: api/<ConnectionControler>
-        [HttpGet]
-        public IList<ConnectionListModel> Get()
+        [HttpGet("all")]
+        public IList<ConnectionListModel> GetAll()
         {
             var query = repository.GetQueryable();
 
@@ -33,17 +35,17 @@ namespace TransportIS.Web.Controlers
             return projection.ToList();
         }
 
-        /*
-        [HttpGet("liststops/{connectionID}")]
-        public IList<StopListModel> GetStops(Guid id)
+        
+        [HttpGet]
+        public IList<ConnectionListModel> GetStops(Guid carrierId)
         {
-            var query = repository.GetQueryable().Where(Id == id);
+            var query = repository.GetQueryable().Where(predicate => predicate.CarrierId == carrierId);
 
-            var projection = mapper.ProjectTo<StopListModel>(query);
+            var projection = mapper.ProjectTo<ConnectionListModel>(query);
 
             return projection.ToList();
         }
-        */
+        
 
         // GET api/<ConnectionControler>/5
         [HttpGet("{id}")]
@@ -55,17 +57,21 @@ namespace TransportIS.Web.Controlers
 
         // POST api/<ConnectionControler>
         [HttpPost]
-        public ConnectionDetialModel Post([FromBody] ConnectionDetialModel model)
+        public ConnectionDetialModel Post(Guid carrierId,[FromBody] ConnectionDetialModel model)
         {
+            model.CarrierId = carrierId;
             var result =  repository.Insert(mapper.Map<ConnectionEntity>(model));
             return mapper.Map<ConnectionDetialModel>(result);
         }
 
         // PUT api/<ConnectionControler>/5
         [HttpPut("{id}")]
-        public CarrierDetailModel Put(Guid id, [FromBody] CarrierDetailModel model)
+        public ConnectionDetialModel Put(Guid id, [FromBody] ConnectionDetialModel model)
         {
             var entity = repository.GetEntityById(id);
+
+            model.Id = id;
+
             mapper.Map(model, entity);
 
             if (entity != null)
@@ -76,6 +82,7 @@ namespace TransportIS.Web.Controlers
         }
 
         // DELETE api/<ConnectionControler>/5
+        [Authorize(Roles =("Admin,Carrier"))]
         [HttpDelete("{id}")]
         public void Delete(Guid id)
         {

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TransportIS.DAL;
 
@@ -11,9 +12,10 @@ using TransportIS.DAL;
 namespace TransportIS.DAL.Migrations
 {
     [DbContext(typeof(TransportISDbContext))]
-    partial class TransportISDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211126120926_UserRoleTablAdded")]
+    partial class UserRoleTablAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,19 +37,6 @@ namespace TransportIS.DAL.Migrations
                     b.HasIndex("StopsId");
 
                     b.ToTable("ConnectionEntityStopEntity");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.ToTable("IdentityUserRole<Guid>");
                 });
 
             modelBuilder.Entity("TransportIS.DAL.CarrierEntity", b =>
@@ -359,6 +348,23 @@ namespace TransportIS.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("TransportIS.DAL.Entities.UserRoleEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserRoles");
                 });
 
             modelBuilder.Entity("TransportIS.DAL.VehicleEntity", b =>

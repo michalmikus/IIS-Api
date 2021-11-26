@@ -4,11 +4,15 @@ using TransportIS.BL.Models.DetailModels;
 using AutoMapper;
 using TransportIS.BL.Models.ListModels;
 using TransportIS.DAL;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace TransportIS.Web.Controlers
 {
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    [Authorize(Roles = "Admin,Carrier")]
     [Route("api/carrier/{carrierId}/vehicles")]
     [ApiController]
     public class VehicleControler : ControllerBase
@@ -21,6 +25,18 @@ namespace TransportIS.Web.Controlers
             this.repository = repository;
             this.mapper = mapper;
         }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public IList<VehicleListModel> GetAll(Guid carrierId)
+        {
+            var query = repository.GetQueryable().Where(predicate => predicate.CarrierId == carrierId);
+
+            var projection = mapper.ProjectTo<VehicleListModel>(query);
+
+            return projection.ToList();
+        }
+
         // GET: api/<ConnectionControler>
         [HttpGet]
         public IList<VehicleListModel> Get(Guid carrierId)

@@ -2,7 +2,6 @@
 {
     public enum EmploeeRole
     {
-        Administrator,
         Driver,
         Personal,
     }

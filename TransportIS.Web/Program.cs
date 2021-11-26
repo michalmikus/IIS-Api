@@ -51,10 +51,11 @@ static void ConfigureServices(IServiceCollection services,IConfiguration configu
                return Task.CompletedTask;
            };
 
-        options.LoginPath = "";
+        options.LoginPath = "/api/account/sign-in";
         options.AccessDeniedPath = "";
 
     });
+
 
     services.AddAuthorization();
 

@@ -13,21 +13,25 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 namespace TransportIS.Web.Controlers
 {
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    [Route("api/[controller]")]
+    [Authorize(Roles = "Admin,Carrier")]
+    [Route("api/carriers")]
     [ApiController]
     public class CarrierControler : ControllerBase
     {
         private readonly IRepository<CarrierEntity> repository;
         private readonly IMapper mapper;
+        private Guid CurrentCarrierId { get; set; }
 
         public CarrierControler(IRepository<CarrierEntity> repository, IMapper mapper)
         {
             this.repository = repository;
             this.mapper = mapper;
         }
+
         // GET: api/<ConnectionControler>
-        [HttpGet]
-        public IList<CarrierListModel> Get()
+        [Authorize(Roles ="Admin")]
+        [HttpGet("/all")]
+        public IList<CarrierListModel> GetAll()
         {
            var query = repository.GetQueryable();
 
@@ -37,18 +41,19 @@ namespace TransportIS.Web.Controlers
         }
 
         // GET api/<ConnectionControler>/5
-        [HttpGet("{id}")]
-        public CarrierDetailModel Get(Guid id)
+        [HttpGet]
+        public CarrierDetailModel Get()
         {
-            var entity = repository.GetEntityById(id);
+            var entity = repository.GetEntityById(CurrentCarrierId);
             return mapper.Map<CarrierDetailModel>(entity);
         }
 
         // POST api/<ConnectionControler>
         [HttpPost]
         public CarrierDetailModel Post([FromBody] CarrierDetailModel model)
-        {
-           var result =  repository.Insert(mapper.Map<CarrierEntity>(model));
+        {   
+            var result =  repository.Insert(mapper.Map<CarrierEntity>(model));
+            CurrentCarrierId = model.Id;
             return mapper.Map<CarrierDetailModel>(result);
         }
 
@@ -57,6 +62,9 @@ namespace TransportIS.Web.Controlers
         public CarrierDetailModel Put(Guid id, [FromBody] CarrierDetailModel model)
         {
             var entity = repository.GetEntityById(id);
+
+            model.Id = id;
+
             mapper.Map(model, entity );
             
             if (entity != null)
