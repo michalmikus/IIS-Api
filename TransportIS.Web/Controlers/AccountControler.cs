@@ -80,7 +80,6 @@ namespace TransportIS.Web.Controlers
                 Id = model.Id,
                 Email = model.Email,
                 UserName = model.Name,
-                PhoneNumber = model.PhoneNumber,
                 SecurityStamp = model.Id.ToString()
             };
 
@@ -111,7 +110,6 @@ namespace TransportIS.Web.Controlers
                 Id = model.Id,
                 Email = model.Email,
                 UserName = model.Name,
-                PhoneNumber = model.PhoneNumber,
                 SecurityStamp = model.Id.ToString()
 
             };
@@ -144,7 +142,6 @@ namespace TransportIS.Web.Controlers
                 Id = model.Id,
                 Email = model.Email,
                 UserName = model.Name,
-                PhoneNumber = model.PhoneNumber,
                 SecurityStamp = model.Id.ToString()
 
 
