@@ -6,11 +6,9 @@ namespace TransportIS.BL.Models.DetailModels
     {
         public Guid Id { get; set; }
 
-        public EmploeeRole? Role { get; set; }
+        public string? Role { get; set; }
 
-        public Guid ConnectionId { get; set; }
-
-        public Guid CarrierId   { get; set; }
+        public string? Email { get; set; }
 
         public AddressDetailModel Address { get; set; } = new AddressDetailModel();
     }

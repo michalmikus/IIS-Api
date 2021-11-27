@@ -1,61 +1,57 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TransportIS.DAL.Entities;
 using TransportIS.BL.Repository.Interfaces;
 using TransportIS.BL.Models.DetailModels;
 using AutoMapper;
+using TransportIS.DAL.Entities;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace TransportIS.Web.Controlers
 {
-    [Route("api/carrier/{carrierId}/connections/{connectionID}/stops")]
+    [Route("api/carrier/{carrierId}/connections/{connectionId}/Passengers")]
     [ApiController]
-    public class StopControler : ControllerBase
+    public class PassengerControler : ControllerBase
     {
-        private readonly IRepository<StopEntity> repository;
+        private readonly IRepository<PassengerEntity> repository;
         private readonly IMapper mapper;
 
-        public StopControler(IRepository<StopEntity> repository, IMapper mapper)
+        public PassengerControler(IRepository<PassengerEntity> repository, IMapper mapper)
         {
             this.repository = repository;
             this.mapper = mapper;
         }
         // GET: api/<ConnectionControler>
         [HttpGet]
-        public IList<StopListModel> Get()
+        public IList<PassengerListModel> Get()
         {
             var query = repository.GetQueryable();
 
-            var projection = mapper.ProjectTo<StopListModel>(query);
+            var projection = mapper.ProjectTo<PassengerListModel>(query);
 
             return projection.ToList();
         }
 
         // GET api/<ConnectionControler>/5
         [HttpGet("{id}")]
-        public StopDetailModel Get(Guid id)
+        public PassengerDetailModel Get(Guid id)
         {
             var entity = repository.GetEntityById(id);
-            return mapper.Map<StopDetailModel>(entity);
+            return mapper.Map<PassengerDetailModel>(entity);
         }
 
         // POST api/<ConnectionControler>
         [HttpPost]
-        public StopDetailModel Post(Guid connectionId, [FromBody] StopDetailModel model)
+        public PassengerDetailModel Post([FromBody] PassengerDetailModel model)
         {
-            model.ConnectionId = connectionId;
-            var result = repository.Insert(mapper.Map<StopEntity>(model));
-            return mapper.Map<StopDetailModel>(result);
+            var result = repository.Insert(mapper.Map<PassengerEntity>(model));
+            return mapper.Map<PassengerDetailModel>(result);
         }
 
         // PUT api/<ConnectionControler>/5
         [HttpPut("{id}")]
-        public StopDetailModel Put(Guid id, [FromBody] StopDetailModel model)
+        public PassengerDetailModel Put(Guid id, [FromBody] PassengerDetailModel model)
         {
             var entity = repository.GetEntityById(id);
-
-            model.Id = id;
-
             mapper.Map(model, entity);
 
             if (entity != null)
@@ -72,4 +68,5 @@ namespace TransportIS.Web.Controlers
             repository.Delete(id);
         }
     }
+
 }

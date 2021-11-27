@@ -135,6 +135,8 @@ static IServiceCollection AddAutoMapper(IServiceCollection services)
             cfg.CreateMap<TimeTableEntity, TimeTableListModel>();
             cfg.CreateMap<VehicleEntity, VehicleDetailModel>().ReverseMap();
             cfg.CreateMap<VehicleEntity, VehicleListModel>();
+            cfg.CreateMap<PassengerEntity, PassengerDetailModel>().ReverseMap();
+            cfg.CreateMap<PassengerEntity, PassengerListModel>();
 
 
         });

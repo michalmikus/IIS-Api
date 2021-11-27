@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Security.Claims;
 using TransportIS.BL.Models.DetailModels;
+using TransportIS.BL.Repository;
+using TransportIS.BL.Repository.Interfaces;
 using TransportIS.DAL.Entities;
 using TransportIS.DAL.Enums;
 
@@ -19,12 +22,23 @@ namespace TransportIS.Web.Controlers
         private readonly UserManager<UserEntity> userManager;
         private readonly IAuthenticationService service;
         private readonly RoleManager<RoleEntity> userRoleManager;
+        private readonly IRepository<EmploeeEntity> emploeeRepository;
+        private readonly IMapper mapper;
 
-        public AccountControler(UserManager<UserEntity> userManager, IAuthenticationService service, RoleManager<RoleEntity> userRoleManager)
+        public AccountControler
+            (
+                UserManager<UserEntity> userManager,
+                IAuthenticationService service,
+                RoleManager<RoleEntity> userRoleManager,
+                IRepository<EmploeeEntity> emploeeRepository,
+                IMapper mapper
+            )
         {
             this.userManager = userManager;
             this.service = service;
             this.userRoleManager = userRoleManager;
+            this.emploeeRepository = emploeeRepository;
+            this.mapper = mapper;
         }
 
         //httpcontext obsahuje user identety a ta ma claimy
@@ -38,7 +52,6 @@ namespace TransportIS.Web.Controlers
             {
                 return;
             }
-
 
             if (await userManager.CheckPasswordAsync(user, model.Password))
             {
@@ -92,6 +105,7 @@ namespace TransportIS.Web.Controlers
             await userManager.AddToRoleAsync(user, nameof(AppRoles.User));
             
 
+
             if (result.Succeeded)
             {
                 return RedirectToPage("/api/user/{userId}");
@@ -134,12 +148,13 @@ namespace TransportIS.Web.Controlers
         }
 
 
-        [HttpPost("register-emploee")]
+        [HttpPost("register-employee")]
         public async Task<IActionResult> RegisterEmploeeAsync([FromBody] UserDetailModel model)
         {
+            var newId = Guid.NewGuid();
             var user = new UserEntity
             {
-                Id = model.Id,
+                Id = newId,
                 Email = model.Email,
                 UserName = model.Name,
                 SecurityStamp = model.Id.ToString()
@@ -147,9 +162,14 @@ namespace TransportIS.Web.Controlers
 
             };
 
-            await userRoleManager.CreateAsync(new RoleEntity { Name = nameof(AppRoles.Emploee) });
+            var enomploeeModel = new EmploeeDetailModel
+            {
+                Id = newId,
+                Email = model.Email,
 
-            var userId = model.Id;
+            };
+
+            await userRoleManager.CreateAsync(new RoleEntity { Name = nameof(AppRoles.Emploee) });
 
             var result = await userManager.CreateAsync(user, model.Password);
 
@@ -158,12 +178,24 @@ namespace TransportIS.Web.Controlers
 
             if (result.Succeeded)
             {
-                return RedirectToPage("/api/user/{userId}");
+                emploeeRepository.Insert(mapper.Map<EmploeeEntity>(enomploeeModel));
+
+                return RedirectToPage("/api/carrier/employee/{newId}");
             }
             else
             {
                 return Content((HttpContext.Response.StatusCode = 406).ToString());
             }
+        }
+
+        [HttpPost("sign-out")]
+        public async Task<IActionResult> Logout()
+        {
+            await service.SignOutAsync(HttpContext,
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new AuthenticationProperties()
+                   );
+            return RedirectToPage("/api/home");
         }
     }
 }

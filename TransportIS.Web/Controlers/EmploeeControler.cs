@@ -3,28 +3,39 @@ using TransportIS.DAL.Entities;
 using TransportIS.BL.Repository.Interfaces;
 using TransportIS.BL.Models.DetailModels;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace TransportIS.Web.Controlers
 {
-    [Route("api/carrier/{carrierId}/emploees")]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    [Authorize(Roles = "Admin,Emploee")]
+    [Route("api/carrier/employees")]
     [ApiController]
     public class EmploeeControler : ControllerBase
     {
         private readonly IRepository<EmploeeEntity> repository;
         private readonly IMapper mapper;
+        private readonly UserManager<UserEntity> userManager;
+        private readonly IAuthenticationService service;
 
-        public EmploeeControler(IRepository<EmploeeEntity> repository, IMapper mapper)
+        public EmploeeControler(IRepository<EmploeeEntity> repository, IMapper mapper, UserManager<UserEntity> userManager, IAuthenticationService service)
         {
             this.repository = repository;
             this.mapper = mapper;
+            this.userManager = userManager;
+            this.service = service;
         }
         // GET: api/<ConnectionControler>
         [HttpGet]
-        public IList<EmploeeListModel> Get()
+        public IList<EmploeeListModel> GetAll(Guid carrierId)
         {
-            var query = repository.GetQueryable();
+            var query = repository.GetQueryable().Where(predicate => predicate.CarrierId == carrierId);
 
             var projection = mapper.ProjectTo<EmploeeListModel>(query);
 
@@ -41,8 +52,8 @@ namespace TransportIS.Web.Controlers
 
         // POST api/<ConnectionControler>
         [HttpPost]
-        public EmploeeDetailModel Post([FromBody] EmploeeDetailModel model)
-        {
+        public EmploeeDetailModel Post(Guid carrierId,[FromBody] EmploeeDetailModel model)
+        {         
             var result = repository.Insert(mapper.Map<EmploeeEntity>(model));
             return mapper.Map<EmploeeDetailModel>(result);
         }
@@ -60,6 +71,25 @@ namespace TransportIS.Web.Controlers
 
             return model;
         }
+
+        [HttpPut]
+        public EmploeeDetailModel Update([FromBody] EmploeeDetailModel model)
+        {
+            var id = new Guid(userManager.GetUserId(Request.HttpContext.User));
+            
+            var entity = repository.GetQueryable().FirstOrDefault(predicate => predicate.Id == id);
+
+            model.Id = id;
+            model.Email = entity.Email;
+
+            mapper.Map(model, entity);
+
+            if (entity != null)
+                repository.Update(entity);
+
+            return model;
+        }
+
 
         // DELETE api/<ConnectionControler>/5
         [HttpDelete("{id}")]

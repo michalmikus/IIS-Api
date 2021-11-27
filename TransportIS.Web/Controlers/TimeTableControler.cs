@@ -36,7 +36,9 @@ namespace TransportIS.Web.Controlers
         {
             var query = repository.GetQueryable().Where(predicate => predicate.Connection.Id == id);
 
+
             var projection = mapper.ProjectTo<TimeTableListModel>(query);
+
 
             return projection.ToList();
         }

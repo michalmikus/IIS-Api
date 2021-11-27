@@ -13,6 +13,8 @@ namespace TransportIS.DAL.Entities
     {
         public EmploeeRole? Role { get; set; }
 
+        public string? Email { get; set; }
+
 
         [ForeignKey(nameof(ConnectionId))]
         public ConnectionEntity? Connection { get; set; }

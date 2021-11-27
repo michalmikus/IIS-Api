@@ -6,7 +6,8 @@ namespace TransportIS.BL.Models.DetailModels
     {
         public Guid Id { get; set; }
 
-        public EmploeeRole? Role { get; set; }
+        public string? Name { get; set; }
 
+        public string? Role { get; set; }
     }
 }
