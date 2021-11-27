@@ -46,8 +46,7 @@ namespace TransportIS.BL.Repository
 
         public virtual TEntity Update(TEntity entity)
         {
-            entity.Id = dbSet.Update(entity).Entity.Id;
-            DbContext.SaveChanges() ;   
+            entity.Id = dbSet.Update(entity).Entity.Id; 
             return entity;
         }
         
@@ -60,6 +59,11 @@ namespace TransportIS.BL.Repository
                 dbSet.Remove(entity);
                 DbContext.SaveChanges();
             }
+        }
+
+        public void SaveChanges()
+        {
+            DbContext.SaveChanges();
         }
 
         public IQueryable<TEntity> Find(Expression<Func<TEntity, bool>> predicate)

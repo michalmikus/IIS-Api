@@ -10,6 +10,10 @@
 
         public string? PhoneNumber { get; set; }
 
+        public Guid UserId { get; set; }
+
+        public Guid ConnectionId { get; set; }
+
         public Guid TicketId { get; set; }
     }
 }

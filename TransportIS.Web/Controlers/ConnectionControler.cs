@@ -11,8 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace TransportIS.Web.Controlers
 {
-
-    [Route("api/carrier/{carrierId}/connections")]
+    [Route("api/carrier/{carrierId}/connection")]
     [ApiController]
     public class ConnectionControler : ControllerBase
     {
@@ -29,17 +28,6 @@ namespace TransportIS.Web.Controlers
         public IList<ConnectionListModel> GetAll()
         {
             var query = repository.GetQueryable();
-
-            var projection = mapper.ProjectTo<ConnectionListModel>(query);
-
-            return projection.ToList();
-        }
-
-        
-        [HttpGet]
-        public IList<ConnectionListModel> GetStops(Guid carrierId)
-        {
-            var query = repository.GetQueryable().Where(predicate => predicate.CarrierId == carrierId);
 
             var projection = mapper.ProjectTo<ConnectionListModel>(query);
 

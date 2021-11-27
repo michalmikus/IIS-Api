@@ -19,6 +19,8 @@ namespace TransportIS.BL.Repository.Interfaces
         
         public TEntity Update(TEntity entity);
 
+        public void SaveChanges();
+
         public void Delete(Guid id);
     }
 }

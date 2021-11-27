@@ -15,47 +15,35 @@ using TransportIS.DAL.Enums;
 namespace TransportIS.Web.Controlers
 {
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "Admin,Carrier,Emploee")]
-    [Route("api/carrier/employees")]
+    [Route("api/carrier/{carrierId}/employees")]
     [ApiController]
     public class EmploeeControler : ControllerBase
     {
 
-        public class Composite
-        {
-            public EmploeeDetailModel EmployeeModel { get; set; }
-
-            public UserDetailModel UserDetail { get; set; }
-        }
 
         private readonly IRepository<EmploeeEntity> repository;
         private readonly IMapper mapper;
         private readonly UserManager<UserEntity> userManager;
         private readonly RoleManager<RoleEntity> roleManager;
-        private readonly IAuthenticationService service;
 
         public EmploeeControler
             (
                 IRepository<EmploeeEntity> repository,
                 IMapper mapper,
                 UserManager<UserEntity> userManager,
-                RoleManager<RoleEntity> roleManager,
-                IAuthenticationService service
+                RoleManager<RoleEntity> roleManager
             )
         {
             this.repository = repository;
             this.mapper = mapper;
             this.userManager = userManager;
             this.roleManager = roleManager;
-            this.service = service;
         }
         // GET: api/<ConnectionControler>
-
-        [Authorize(Roles = "Admin,Carrier")]
+        [Authorize(Roles = "Admin,Carrier,Emploee")]
         [HttpGet("all")]
-        public IList<EmploeeListModel> GetAll()
+        public IList<EmploeeListModel> GetAll(Guid carrierId)
         {
-            var carrierId = new Guid(userManager.GetUserId(Request.HttpContext.User));
-
             var query = repository.GetQueryable().Where(predicate => predicate.CarrierId == carrierId);
 
             var projection = mapper.ProjectTo<EmploeeListModel>(query);
@@ -71,53 +59,65 @@ namespace TransportIS.Web.Controlers
             return mapper.Map<EmploeeDetailModel>(entity);
         }
 
-        // POST api/<ConnectionControler>
-        [HttpPost]
-        public async Task<EmploeeDetailModel>  Post([FromBody] Composite composite)
+
+        [HttpPost("register-employee")]
+        public async Task<IActionResult> RegisterEmploeeAsync(Guid carrierId, [FromBody] EmployeeRegistrationDetail registrationDetail)
         {
-            EmploeeDetailModel employeeModel = composite.EmployeeModel;
-            UserDetailModel userModel = composite.UserDetail;
+            var modelId = Guid.NewGuid();
 
-            var carrierId = new Guid(userManager.GetUserId(Request.HttpContext.User));
-            employeeModel.carrierId = carrierId;
-
-            userModel.Id = employeeModel.Id;
-            userModel.Email = employeeModel?.Email;
-
-            await CreateAccAsync(userModel);
-
-            var result = repository.Insert(mapper.Map<EmploeeEntity>(employeeModel));
-            return mapper.Map<EmploeeDetailModel>(result);
-        }
-
-        public async Task CreateAccAsync(UserDetailModel model)
-        {
             var user = new UserEntity
             {
-                Id = model.Id,
-                Email = model.Email,
-                UserName = model.Name,
-                SecurityStamp = model.Id.ToString()
-
-
+                Email = registrationDetail.UserDetail.Email,
+                UserName = registrationDetail.UserDetail.Name,
+                SecurityStamp = Guid.NewGuid().ToString(),
+                EmployeeId = modelId
             };
 
             await roleManager.CreateAsync(new RoleEntity { Name = nameof(AppRoles.Emploee) });
 
-            await userManager.CreateAsync(user, model.Password);
+            var result = await userManager.CreateAsync(user, registrationDetail.UserDetail.Password);
 
             await userManager.AddToRoleAsync(user, nameof(AppRoles.Emploee));
+
+            var userEntity = userManager.Users.FirstOrDefault(email => email.Email == registrationDetail.UserDetail.Email);
+
+            var enomploeeModel = new EmploeeDetailModel
+            {
+                Id = modelId,
+                Email = userEntity.Email,
+                Role = registrationDetail.EmployeeModel.Role,
+                CarrierId = carrierId,
+                Address = registrationDetail.EmployeeModel.Address,
+                UserId = userEntity.Id,
+            };
+
+
+            if (result.Succeeded)
+            {
+                repository.Insert(mapper.Map<EmploeeEntity>(enomploeeModel));
+
+                return Content((HttpContext.Response.StatusCode = 200).ToString());
+            }
+            else
+            {
+                return Content((HttpContext.Response.StatusCode = 406).ToString());
+            }
         }
 
         // PUT api/<ConnectionControler>/5
         [HttpPut("{id}")]
         public EmploeeDetailModel Put(Guid id, [FromBody] EmploeeDetailModel model)
         {
-            var entity = repository.GetEntityById(id);
+            var entity = repository.GetEntityById(id);   
+
             mapper.Map(model, entity);
 
             if (entity != null)
+            {
                 repository.Update(entity);
+                repository.SaveChanges();
+            }
+
 
 
             return model;
@@ -131,7 +131,6 @@ namespace TransportIS.Web.Controlers
             var entity = repository.GetQueryable().FirstOrDefault(predicate => predicate.Id == id);
 
             model.Id = id;
-            model.Email = entity.Email;
 
             mapper.Map(model, entity);
 
@@ -145,6 +144,12 @@ namespace TransportIS.Web.Controlers
         [HttpDelete("{id}")]
         public void Delete(Guid id)
         {
+            var userEntity = userManager.Users.FirstOrDefault(predicate => predicate.EmployeeId == id);
+           
+            if (userEntity != null)
+            {
+                userManager.DeleteAsync(userEntity);
+            }
             repository.Delete(id);
         }
     }

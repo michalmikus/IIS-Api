@@ -17,7 +17,7 @@ namespace TransportIS.Web.Controlers
 {
     [Route("api/account")]
     [ApiController]
-    public class AccountControler : ControllerBase
+    public partial class AccountControler : ControllerBase
     {
         private readonly UserManager<UserEntity> userManager;
         private readonly IAuthenticationService service;
@@ -52,8 +52,9 @@ namespace TransportIS.Web.Controlers
             {
                 return;
             }
+            var result = await userManager.CheckPasswordAsync(user, model.Password);
 
-            if (await userManager.CheckPasswordAsync(user, model.Password))
+            if (result)
             {
                 var roles = await GetClaimsAsync(user);
 
@@ -66,7 +67,7 @@ namespace TransportIS.Web.Controlers
             }
             else
             {
-                HttpContext.Response.StatusCode = 401;
+                Content("405");
             }
             
         }
@@ -85,9 +86,10 @@ namespace TransportIS.Web.Controlers
             };
         }
 
-        [HttpPost("register-user")]
+        [HttpPost("register-admin")]
         public async Task<IActionResult> RegisterUserAsync([FromBody] UserDetailModel model)
         {
+    
             var user = new UserEntity
             {
                 Id = model.Id,
@@ -96,19 +98,19 @@ namespace TransportIS.Web.Controlers
                 SecurityStamp = model.Id.ToString()
             };
 
-            await userRoleManager.CreateAsync(new RoleEntity { Name = nameof(AppRoles.User)});
+            await userRoleManager.CreateAsync(new RoleEntity { Name = nameof(AppRoles.Admin)});
 
             var userId = model.Id;
 
             var result = await userManager.CreateAsync(user, model.Password);
             
-            await userManager.AddToRoleAsync(user, nameof(AppRoles.User));
+            await userManager.AddToRoleAsync(user, nameof(AppRoles.Admin));
             
 
 
             if (result.Succeeded)
             {
-                return RedirectToPage("/api/user/{userId}");
+                return Content((HttpContext.Response.StatusCode = 200).ToString()); ;
             }
             else
             {
@@ -116,77 +118,6 @@ namespace TransportIS.Web.Controlers
             }
         }
 
-        [HttpPost("register-carrier")]
-        public async Task<IActionResult> RegisterCarrierAsync([FromBody] UserDetailModel model)
-        {
-            var user = new UserEntity
-            {
-                Id = model.Id,
-                Email = model.Email,
-                UserName = model.Name,
-                SecurityStamp = model.Id.ToString()
-
-            };
-
-            await userRoleManager.CreateAsync(new RoleEntity { Name = nameof(AppRoles.Carrier) });
-
-            var carrierId = model.Id;
-
-            var result = await userManager.CreateAsync(user, model.Password);
-
-            await userManager.AddToRoleAsync(user, nameof(AppRoles.Carrier));
-
-
-            if (result.Succeeded)
-            {
-                return RedirectToPage("/api/carriers");
-            }
-            else
-            {
-                return Content((result.Errors).ToString());
-            }
-        }
-
-
-        [HttpPost("register-employee")]
-        public async Task<IActionResult> RegisterEmploeeAsync([FromBody] UserDetailModel model)
-        {
-            var newId = Guid.NewGuid();
-            var user = new UserEntity
-            {
-                Id = newId,
-                Email = model.Email,
-                UserName = model.Name,
-                SecurityStamp = model.Id.ToString()
-
-
-            };
-
-            var enomploeeModel = new EmploeeDetailModel
-            {
-                Id = newId,
-                Email = model.Email,
-
-            };
-
-            await userRoleManager.CreateAsync(new RoleEntity { Name = nameof(AppRoles.Emploee) });
-
-            var result = await userManager.CreateAsync(user, model.Password);
-
-            await userManager.AddToRoleAsync(user, nameof(AppRoles.Emploee));
-
-
-            if (result.Succeeded)
-            {
-                emploeeRepository.Insert(mapper.Map<EmploeeEntity>(enomploeeModel));
-
-                return RedirectToPage("/api/carrier/employee/{newId}");
-            }
-            else
-            {
-                return Content((HttpContext.Response.StatusCode = 406).ToString());
-            }
-        }
 
         [HttpPost("sign-out")]
         public async Task<IActionResult> Logout()
@@ -195,7 +126,7 @@ namespace TransportIS.Web.Controlers
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     new AuthenticationProperties()
                    );
-            return RedirectToPage("/api/home");
+            return Content((HttpContext.Response.StatusCode = 200).ToString()); ;
         }
     }
 }

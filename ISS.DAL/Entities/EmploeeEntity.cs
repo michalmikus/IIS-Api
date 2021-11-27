@@ -15,17 +15,9 @@ namespace TransportIS.DAL.Entities
 
         public string? Email { get; set; }
 
-
-        [ForeignKey(nameof(ConnectionId))]
-        public ConnectionEntity? Connection { get; set; }
-        public Guid? ConnectionId { get; set; }
-
-
-        [ForeignKey(nameof(CarrierId))]
-        public ConnectionEntity? Carried { get; set; }
         public Guid? CarrierId { get; set; }
 
-        public ICollection<EmploeeConnectionAssigment> Connections { get; set; } = new List<EmploeeConnectionAssigment>();
+        public Guid UserId { get; set; }
 
         public AddressEntity? Address { get; set; }
     }

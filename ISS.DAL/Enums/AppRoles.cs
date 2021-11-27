@@ -11,7 +11,7 @@ namespace TransportIS.DAL.Enums
         Admin,
         Carrier,
         Emploee,
-        Passanger,
+        Passenger,
         User
     }
 }

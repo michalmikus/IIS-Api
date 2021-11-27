@@ -10,7 +10,9 @@ namespace TransportIS.BL.Models.DetailModels
 
         public string? Email { get; set; }
 
-        public Guid carrierId { get; set; }
+        public Guid CarrierId { get; set; }
+
+        public Guid UserId { get; set; }
 
         public AddressDetailModel Address { get; set; } = new AddressDetailModel();
     }
