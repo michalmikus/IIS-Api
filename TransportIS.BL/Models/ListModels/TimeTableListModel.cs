@@ -12,6 +12,8 @@ namespace TransportIS.BL.Models.DetailModels
 
         public string? ConnectionName { get; set; }
 
+        public Guid ConnectionId  { get; set; }
+
         public string? StopName { get; set; }
 
         public DateTime TimeOfDeparture { get; set; }

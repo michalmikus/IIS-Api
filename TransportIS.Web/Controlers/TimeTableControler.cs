@@ -14,11 +14,13 @@ namespace TransportIS.Web.Controlers
     {
         private readonly IRepository<TimeTableEntity> repository;
         private readonly IMapper mapper;
+        private readonly IRepository<ConnectionEntity> connectionRepository;
 
-        public TimeTableControler(IRepository<TimeTableEntity> repository, IMapper mapper)
+        public TimeTableControler(IRepository<TimeTableEntity> repository, IMapper mapper, IRepository<ConnectionEntity> connectionRepository)
         {
             this.repository = repository;
             this.mapper = mapper;
+            this.connectionRepository = connectionRepository;
         }
         // GET: api/<ConnectionControler>
         [HttpGet]
@@ -29,6 +31,19 @@ namespace TransportIS.Web.Controlers
             var projection = mapper.ProjectTo<TimeTableListModel>(query);
 
             return projection.ToList();
+        }
+
+        // GET: api/<ConnectionControler>
+        [HttpGet("/info/{connectionId}")]
+        public string GetURL(Guid connectionId)
+        {
+            var connection = connectionRepository.GetQueryable().FirstOrDefault(predicate => predicate.Id == connectionId);
+
+            var carrierId = connection.CarrierId.ToString();
+
+            var url = "api/carrier/" + carrierId + "/connection/" + connectionId + "/passangers/";
+
+            return url;
         }
 
         [HttpGet("times/{id}")]

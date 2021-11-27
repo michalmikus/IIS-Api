@@ -119,5 +119,4 @@ namespace TransportIS.Web.Controlers
             repository.Delete(id);
         }
     }
-
 }

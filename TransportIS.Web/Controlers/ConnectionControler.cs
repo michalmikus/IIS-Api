@@ -25,9 +25,9 @@ namespace TransportIS.Web.Controlers
         }
         // GET: api/<ConnectionControler>
         [HttpGet("all")]
-        public IList<ConnectionListModel> GetAll()
+        public IList<ConnectionListModel> GetAll(Guid carrierId)
         {
-            var query = repository.GetQueryable();
+            var query = repository.GetQueryable().Where(predicate => predicate.CarrierId == carrierId) ;
 
             var projection = mapper.ProjectTo<ConnectionListModel>(query);
 
