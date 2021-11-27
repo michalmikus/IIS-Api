@@ -143,7 +143,7 @@ namespace TransportIS.Web.Controlers
             }
             else
             {
-                return Content((HttpContext.Response.StatusCode = 406).ToString());
+                return Content((result.Errors).ToString());
             }
         }
 

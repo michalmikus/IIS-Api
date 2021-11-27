@@ -30,7 +30,7 @@ namespace TransportIS.Web.Controlers
 
         // GET: api/<ConnectionControler>
         [Authorize(Roles ="Admin")]
-        [HttpGet("/all")]
+        [HttpGet("all")]
         public IList<CarrierListModel> GetAll()
         {
            var query = repository.GetQueryable();
@@ -54,6 +54,7 @@ namespace TransportIS.Web.Controlers
         {   
             var result =  repository.Insert(mapper.Map<CarrierEntity>(model));
             CurrentCarrierId = model.Id;
+            RedirectToPage("/api/carriers/{modelId}");
             return mapper.Map<CarrierDetailModel>(result);
         }
 
