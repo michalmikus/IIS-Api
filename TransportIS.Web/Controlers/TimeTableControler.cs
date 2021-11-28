@@ -46,14 +46,12 @@ namespace TransportIS.Web.Controlers
             return url;
         }
 
-        [HttpGet("times/{id}")]
-        public IList<TimeTableListModel> GetTimes(Guid id)
+        [HttpGet("times/{connectionId}/{time}")]
+        public IList<TimeTableListModel> GetTimes(Guid connectionId,DateTime time)
         {
-            var query = repository.GetQueryable().Where(predicate => predicate.Connection.Id == id);
-
+            var query = repository.GetQueryable().Where(predicate => predicate.ConnectionId == connectionId && predicate.TimeOfDeparture > time);
 
             var projection = mapper.ProjectTo<TimeTableListModel>(query);
-
 
             return projection.ToList();
         }

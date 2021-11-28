@@ -44,13 +44,13 @@ namespace TransportIS.Web.Controlers
         //httpcontext obsahuje user identety a ta ma claimy
 
         [HttpPost("sign-in")]
-        public async Task SignInAsync([FromBody] CredentialsDetailModel model)
+        public async Task<IdentityDetail?> SignInAsync([FromBody] CredentialsDetailModel model)
         {
             var user = await userManager.FindByEmailAsync(model.Email);
 
             if (user == null)
             {
-                return;
+                return null;
             }
             var result = await userManager.CheckPasswordAsync(user, model.Password);
 
@@ -64,10 +64,29 @@ namespace TransportIS.Web.Controlers
                     new ClaimsPrincipal(new ClaimsIdentity(roles, CookieAuthenticationDefaults.AuthenticationScheme)),
                     new AuthenticationProperties()
                 );
+
+                if (await userManager.IsInRoleAsync(user,nameof(AppRoles.Emploee)))
+                {
+                    return new IdentityDetail
+                    {
+                        UserId = user.EmployeeId,
+                        UserType = nameof(AppRoles.Emploee)
+                    };
+                }
+                if (await userManager.IsInRoleAsync(user, nameof(AppRoles.Passenger)))
+                {
+                    return new IdentityDetail
+                    {
+                        UserId = user.PassangerId,
+                        UserType = nameof(AppRoles.Passenger)
+                    };
+                }
+                return null;
             }
             else
             {
                 Content("405");
+                return null;
             }
             
         }
