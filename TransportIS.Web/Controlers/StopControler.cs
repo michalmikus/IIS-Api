@@ -8,7 +8,7 @@ using AutoMapper;
 
 namespace TransportIS.Web.Controlers
 {
-    [Route("api/carrier/{carrierId}/connections/{connectionID}/stops")]
+    [Route("api/carrier/{carrierId}/connection/{connectionID}/stops")]
     [ApiController]
     public class StopControler : ControllerBase
     {

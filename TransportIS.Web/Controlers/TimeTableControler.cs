@@ -34,21 +34,22 @@ namespace TransportIS.Web.Controlers
         }
 
         // GET: api/<ConnectionControler>
-        [HttpGet("/info/{connectionId}")]
-        public string GetURL(Guid connectionId)
+        [HttpGet("info/{connectionId}/{intValue}")]
+        public string GetURL(Guid connectionId,int value)
         {
             var connection = connectionRepository.GetQueryable().FirstOrDefault(predicate => predicate.Id == connectionId);
 
             var carrierId = connection.CarrierId.ToString();
 
-            var url = "api/carrier/" + carrierId + "/connection/" + connectionId + "/passangers/";
+            var url = "api/carrier/" + carrierId + "/connection/" + connectionId + "/passangers/"+value;
 
             return url;
         }
 
-        [HttpGet("times/{connectionId}/{time}")]
-        public IList<TimeTableListModel> GetTimes(Guid connectionId,DateTime time)
+        [HttpGet("times/{connectionId}/{timeString}")]
+        public IList<TimeTableListModel> GetTimes(Guid connectionId,string timeString)
         {
+            var time = DateTime.Parse(timeString);
             var query = repository.GetQueryable().Where(predicate => predicate.ConnectionId == connectionId && predicate.TimeOfDeparture > time);
 
             var projection = mapper.ProjectTo<TimeTableListModel>(query);

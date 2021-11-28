@@ -12,8 +12,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace TransportIS.Web.Controlers
 {
-    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    [Authorize(Roles = "Admin,Carrier")]
     [Route("api/carriers")]
     [ApiController]
     public class CarrierControler : ControllerBase

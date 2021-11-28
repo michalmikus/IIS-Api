@@ -56,7 +56,6 @@ static void ConfigureServices(IServiceCollection services,IConfiguration configu
 
     });
 
-
     services.AddAuthorization();
 
     services.AddTransient<Func<TransportISDbContext>>(sp => () => sp.GetRequiredService<TransportISDbContext>());
