@@ -4,8 +4,8 @@ namespace TransportIS.DAL.Entities
 {
     public class UserEntity : IdentityUser<Guid>
     {
-        public Guid EmployeeId { get; set; }
+        public Guid? EmployeeId { get; set; }
 
-        public Guid PassangerId { get; set; }
+        public Guid? PassangerId { get; set; }
     }
 }

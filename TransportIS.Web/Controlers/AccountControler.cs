@@ -50,7 +50,8 @@ namespace TransportIS.Web.Controlers
 
             if (user == null)
             {
-                return null;
+                HttpContext.Response.StatusCode = 406;
+                return null;       
             }
             var result = await userManager.CheckPasswordAsync(user, model.Password);
 
@@ -81,11 +82,36 @@ namespace TransportIS.Web.Controlers
                         UserType = nameof(AppRoles.Passenger)
                     };
                 }
+                if (await userManager.IsInRoleAsync(user, nameof(AppRoles.Carrier)))
+                {
+                    var emploeeEntity = emploeeRepository.GetQueryable().FirstOrDefault(precidate => precidate.Id == user.EmployeeId);
+                     
+                    if (emploeeEntity == null)
+                    {
+                        HttpContext.Response.StatusCode = 500;
+                        return null;
+                    }
+                    return new IdentityDetail
+                    {
+                        UserId = emploeeEntity.CarrierId,
+                        UserType = nameof(AppRoles.Carrier)
+                    };
+                }
+                if (await userManager.IsInRoleAsync(user, nameof(AppRoles.Admin)))
+                {
+                    return new IdentityDetail
+                    {
+                        UserId = null,
+                        UserType = nameof(AppRoles.Admin)
+                    };
+                }
+
+                HttpContext.Response.StatusCode = 200;
                 return null;
             }
             else
             {
-                Content("405");
+                await HttpContext.Response.WriteAsync("406");
                 return null;
             }
             
@@ -145,7 +171,7 @@ namespace TransportIS.Web.Controlers
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     new AuthenticationProperties()
                    );
-            return Content((HttpContext.Response.StatusCode = 200).ToString()); ;
+            return Content((HttpContext.Response.StatusCode = 200).ToString());
         }
     }
 }
