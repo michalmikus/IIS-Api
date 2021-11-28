@@ -10,16 +10,11 @@ namespace TransportIS.Web.Controlers
 {
     [Route("api/TimeTables")]
     [ApiController]
-    public class TimeTableControler : ControllerBase
+    public partial class TimeTableControler : ControllerBase
     {
         private readonly IRepository<TimeTableEntity> repository;
         private readonly IMapper mapper;
         private readonly IRepository<ConnectionEntity> connectionRepository;
-
-        public class ResponseData
-        {
-            public string? Url { get; set; }
-        }
 
         public TimeTableControler(IRepository<TimeTableEntity> repository, IMapper mapper, IRepository<ConnectionEntity> connectionRepository)
         {
@@ -39,8 +34,8 @@ namespace TransportIS.Web.Controlers
         }
 
         // GET: api/<ConnectionControler>
-        [HttpGet("info/{connectionId}/{intValue}")]
-        public ResponseData GetURL(Guid connectionId, int value)
+        [HttpGet("info/{connectionId}")]
+        public ResponseData GetURL(Guid connectionId)
         {
             var connection = connectionRepository.GetQueryable().FirstOrDefault(predicate => predicate.Id == connectionId);
 
@@ -48,7 +43,7 @@ namespace TransportIS.Web.Controlers
 
             return new ResponseData 
             { 
-                Url = "api/carrier/" + carrierId + "/connection/" + connectionId + "/passangers/" 
+                Url = "api/carrier/" + carrierId + "/connection/" + connectionId + "/passengers/" 
             };
         }
 
