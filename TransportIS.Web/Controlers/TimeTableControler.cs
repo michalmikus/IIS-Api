@@ -50,7 +50,7 @@ namespace TransportIS.Web.Controlers
         public IList<TimeTableListModel> GetTimes(Guid connectionId,string timeString)
         {
             var time = DateTime.Parse(timeString);
-            var query = repository.GetQueryable().Where(predicate => predicate.ConnectionId == connectionId && predicate.TimeOfDeparture > time);
+            var query = repository.GetQueryable().Where(predicate => predicate.ConnectionId == connectionId && predicate.TimeOfDeparture.TimeOfDay > time.TimeOfDay);
 
             var projection = mapper.ProjectTo<TimeTableListModel>(query);
 
