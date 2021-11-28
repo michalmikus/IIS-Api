@@ -39,7 +39,7 @@ namespace TransportIS.Web.Controlers
         }
 
         [HttpPost("register-passenger")]
-        public async Task<IActionResult> RegisterPassengerAsync(Guid connectionId, [FromBody] PassengerRegistrationDetail registrationDetail)
+        public async Task<string> RegisterPassengerAsync(Guid carrierId,Guid connectionId, [FromBody] PassengerRegistrationDetail registrationDetail)
         {
             var modelId = Guid.NewGuid();
             var user = new UserEntity
@@ -72,12 +72,12 @@ namespace TransportIS.Web.Controlers
             if (result.Succeeded)
             {
                 repository.Insert(mapper.Map<PassengerEntity>(passengerModel));
-                
-                return Content((HttpContext.Response.StatusCode = 200).ToString());
+
+                return "api/carrier/"+ carrierId +"/connection/" + connectionId + "/passengers/" + modelId;
             }
             else
             {
-                return Content((HttpContext.Response.StatusCode = 406).ToString());
+                return (HttpContext.Response.StatusCode = 406).ToString();
             }
         }
 

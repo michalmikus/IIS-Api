@@ -35,19 +35,19 @@ namespace TransportIS.Web.Controlers
 
         // GET: api/<ConnectionControler>
         [HttpGet("info/{connectionId}/{intValue}")]
-        public string GetURL(Guid connectionId,int value)
+        public string GetURL(Guid connectionId, int value)
         {
             var connection = connectionRepository.GetQueryable().FirstOrDefault(predicate => predicate.Id == connectionId);
 
             var carrierId = connection.CarrierId.ToString();
 
-            var url = "api/carrier/" + carrierId + "/connection/" + connectionId + "/passangers/"+value;
+            var url = "api/carrier/" + carrierId + "/connection/" + connectionId + "/passangers/" + value;
 
             return url;
         }
 
         [HttpGet("times/{connectionId}/{timeString}")]
-        public IList<TimeTableListModel> GetTimes(Guid connectionId,string timeString)
+        public IList<TimeTableListModel> GetTimes(Guid connectionId, string timeString)
         {
             var time = DateTime.Parse(timeString);
             var query = repository.GetQueryable().Where(predicate => predicate.ConnectionId == connectionId && predicate.TimeOfDeparture.TimeOfDay > time.TimeOfDay);
@@ -66,9 +66,10 @@ namespace TransportIS.Web.Controlers
         }
 
         // POST api/<ConnectionControler>
-        [HttpPost]
-        public TimeTableDetailModel Post([FromBody] TimeTableDetailModel model)
+        [HttpPost("{connectionId}")]
+        public TimeTableDetailModel Post(Guid connectionId,[FromBody] TimeTableDetailModel model)
         {
+            model.ConnectionId = connectionId;
             var result = repository.Insert(mapper.Map<TimeTableEntity>(model));
             return mapper.Map<TimeTableDetailModel>(result);
         }

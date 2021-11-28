@@ -15,13 +15,7 @@ namespace TransportIS.DAL.Entities
 
         public Guid? StopId { get; set; }
 
-
-
-        [ForeignKey(nameof(ConnectionId))]
-        public ConnectionEntity? Connection { get; set; }
-
         public Guid? ConnectionId { get; set; }
-
       
         public DateTime TimeOfDeparture { get; set; }
     }
