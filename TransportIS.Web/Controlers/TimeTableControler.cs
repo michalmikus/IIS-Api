@@ -16,6 +16,11 @@ namespace TransportIS.Web.Controlers
         private readonly IMapper mapper;
         private readonly IRepository<ConnectionEntity> connectionRepository;
 
+        public class ResponseData
+        {
+            public string? Url { get; set; }
+        }
+
         public TimeTableControler(IRepository<TimeTableEntity> repository, IMapper mapper, IRepository<ConnectionEntity> connectionRepository)
         {
             this.repository = repository;
@@ -35,15 +40,16 @@ namespace TransportIS.Web.Controlers
 
         // GET: api/<ConnectionControler>
         [HttpGet("info/{connectionId}/{intValue}")]
-        public string GetURL(Guid connectionId, int value)
+        public ResponseData GetURL(Guid connectionId, int value)
         {
             var connection = connectionRepository.GetQueryable().FirstOrDefault(predicate => predicate.Id == connectionId);
 
             var carrierId = connection.CarrierId.ToString();
 
-            var url = "api/carrier/" + carrierId + "/connection/" + connectionId + "/passangers/" + value;
-
-            return url;
+            return new ResponseData 
+            { 
+                Url = "api/carrier/" + carrierId + "/connection/" + connectionId + "/passangers/" 
+            };
         }
 
         [HttpGet("times/{connectionId}/{timeString}")]
