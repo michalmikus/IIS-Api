@@ -4,7 +4,7 @@ namespace TransportIS.Web.Controlers
 {
     public partial class TimeTableControler
     {
-        public class ResponseData
+        public class ResponseDetail
         {
             public string? Url { get; set; }
         }

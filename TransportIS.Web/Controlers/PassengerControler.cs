@@ -5,6 +5,7 @@ using AutoMapper;
 using TransportIS.DAL.Entities;
 using Microsoft.AspNetCore.Identity;
 using TransportIS.DAL.Enums;
+using static TransportIS.Web.Controlers.TimeTableControler;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -28,7 +29,7 @@ namespace TransportIS.Web.Controlers
             this.roleManager = roleManager;
         }
         // GET: api/<ConnectionControler>
-        [HttpGet]
+        [HttpGet("all")]
         public IList<PassengerListModel> Get()
         {
             var query = repository.GetQueryable();
@@ -39,7 +40,7 @@ namespace TransportIS.Web.Controlers
         }
 
         [HttpPost("register-passenger")]
-        public async Task<string> RegisterPassengerAsync(Guid carrierId,Guid connectionId, [FromBody] PassengerRegistrationDetail registrationDetail)
+        public async Task<IdentityDetail?> RegisterPassengerAsync(Guid carrierId,Guid connectionId, [FromBody] PassengerRegistrationDetail registrationDetail)
         {
             var modelId = Guid.NewGuid();
             var user = new UserEntity
@@ -55,6 +56,11 @@ namespace TransportIS.Web.Controlers
 
             var result = await userManager.CreateAsync(user, registrationDetail.UserDetail.Password);
 
+            if (!result.Succeeded)
+            {
+                HttpContext.Response.StatusCode = 406;
+            }
+
             await userManager.AddToRoleAsync(user, nameof(AppRoles.Passenger));
 
             var userEntity = userManager.Users.FirstOrDefault(email => email.Email == registrationDetail.UserDetail.Email);
@@ -66,6 +72,7 @@ namespace TransportIS.Web.Controlers
                 Address = registrationDetail.PassengerModel.Address,
                 UserId = userEntity.Id,
                 ConnectionId = connectionId,
+                PhoneNumber = registrationDetail.PassengerModel.PhoneNumber
             };
 
 
@@ -73,11 +80,16 @@ namespace TransportIS.Web.Controlers
             {
                 repository.Insert(mapper.Map<PassengerEntity>(passengerModel));
 
-                return "api/carrier/"+ carrierId +"/connection/" + connectionId + "/passengers/" + modelId;
+                return new IdentityDetail
+                {
+                    UserId = userEntity.Id,
+                    UserType = nameof(AppRoles.Passenger)
+                } ;
             }
             else
             {
-                return (HttpContext.Response.StatusCode = 406).ToString();
+                HttpContext.Response.StatusCode = 406;
+                return null;
             }
         }
 
@@ -107,7 +119,7 @@ namespace TransportIS.Web.Controlers
 
             if (entity != null)
                 repository.Update(entity);
-
+            repository.SaveChanges();
 
             return model;
         }

@@ -11,9 +11,10 @@ namespace TransportIS.DAL.Entities
     public class TimeTableEntity : BaseEntity
     {
         [ForeignKey(nameof(StopId))]
-        public StopEntity? Stop { get; set; }
 
-        public Guid? StopId { get; set; }
+        public StopEntity Stop? { get; set; }
+
+        public Guid StopId { get; set; }
 
         public Guid? ConnectionId { get; set; }
       

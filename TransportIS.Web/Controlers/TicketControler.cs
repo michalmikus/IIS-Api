@@ -8,27 +8,37 @@ using TransportIS.DAL.Entities;
 
 namespace TransportIS.Web.Controlers
 {
-    [Route("api/carrier/{carrierId}/connection/{connectionId}/passenger/{passengerId}/{reservedSeats}/ticket")]
+    [Route("api/carrier/{carrierId}/connection/{connectionId}/passenger/{passengerId}/ticket")]
     [ApiController]
     public class TicketControler : ControllerBase   
     {
         private readonly IRepository<TicketEntity> repository;
-        private readonly IMapper mapper;
 
-        public TicketControler(IRepository<TicketEntity> repository, IMapper mapper)
+        private readonly IMapper mapper;
+        private readonly IRepository<StopEntity> stopRepository;
+        private readonly IRepository<ConnectionEntity> connectionRepository;
+
+        public TicketControler(IRepository<TicketEntity> repository, IMapper mapper,IRepository<StopEntity> stopRepository, IRepository<ConnectionEntity> connectionRepository)
         {
             this.repository = repository;
             this.mapper = mapper;
+            this.stopRepository = stopRepository;
+            this.connectionRepository = connectionRepository;
         }
         // GET: api/<ConnectionControler>
         [HttpGet]
-        public IList<TicketListModel> Get()
+        public IList<StopListModel> GetStops(Guid connectionId)
         {
-            var query = repository.GetQueryable();
+            var currentConnection = connectionRepository.GetEntityById(connectionId);
 
-            var projection = mapper.ProjectTo<TicketListModel>(query);
+            IList<StopListModel> stopListModels = new List<StopListModel>();
 
-            return projection.ToList();
+            foreach(var stop in currentConnection.Stops)
+            {
+                stopListModels.Add(mapper.Map<StopListModel>(stop));
+            }
+
+            return stopListModels;
         }
 
         // GET api/<ConnectionControler>/5
