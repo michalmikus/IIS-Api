@@ -18,7 +18,6 @@ namespace TransportIS.Web.Controlers
     {
         private readonly IRepository<CarrierEntity> repository;
         private readonly IMapper mapper;
-        private Guid CurrentCarrierId { get; set; }
 
         public CarrierControler(IRepository<CarrierEntity> repository, IMapper mapper)
         {
@@ -27,7 +26,6 @@ namespace TransportIS.Web.Controlers
         }
 
         // GET: api/<ConnectionControler>
-        [Authorize(Roles ="Admin")]
         [HttpGet("all")]
         public IList<CarrierListModel> GetAll()
         {
@@ -39,10 +37,10 @@ namespace TransportIS.Web.Controlers
         }
 
         // GET api/<ConnectionControler>/5
-        [HttpGet]
-        public CarrierDetailModel Get()
+        [HttpGet("{id}")]
+        public CarrierDetailModel Get(Guid id)
         {
-            var entity = repository.GetEntityById(CurrentCarrierId);
+            var entity = repository.GetEntityById(id);
             return mapper.Map<CarrierDetailModel>(entity);
         }
 
@@ -51,8 +49,6 @@ namespace TransportIS.Web.Controlers
         public CarrierDetailModel Post([FromBody] CarrierDetailModel model)
         {   
             var result =  repository.Insert(mapper.Map<CarrierEntity>(model));
-            CurrentCarrierId = model.Id;
-            RedirectToPage("/api/carriers/{modelId}");
             return mapper.Map<CarrierDetailModel>(result);
         }
 
@@ -62,13 +58,24 @@ namespace TransportIS.Web.Controlers
         {
             var entity = repository.GetEntityById(id);
 
-            model.Id = id;
+            if (model.CarrierName != null && model.CarrierName != "")
+                entity.CarrierName = model.CarrierName;
 
-            mapper.Map(model, entity );
-            
+            if (model.TaxNumber != null && model.TaxNumber != "")
+                entity.TaxNumber = model.TaxNumber;
+
+            if (model.PublicRelationsContact != null && model.PublicRelationsContact != "")
+                entity.PublicRelationsContact = model.PublicRelationsContact;
+
+            if (model.TelephoneNumber != null && model.TelephoneNumber != "")
+                entity.TelephoneNumber = model.TelephoneNumber;
+
+
             if (entity != null)
+            { 
                 repository.Update(entity);
-            
+                repository.SaveChanges();
+            }
             return model;
         }
 
