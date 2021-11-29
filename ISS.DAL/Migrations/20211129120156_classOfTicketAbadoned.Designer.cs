@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TransportIS.DAL;
 
@@ -11,9 +12,10 @@ using TransportIS.DAL;
 namespace TransportIS.DAL.Migrations
 {
     [DbContext(typeof(TransportISDbContext))]
-    partial class TransportISDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211129120156_classOfTicketAbadoned")]
+    partial class classOfTicketAbadoned
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -231,11 +233,8 @@ namespace TransportIS.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("BoardingStopId")
+                    b.Property<Guid?>("BoardingStopId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("BoardingStopName")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("ConfirmingEmploeeId")
                         .HasColumnType("uniqueidentifier");
@@ -243,13 +242,10 @@ namespace TransportIS.DAL.Migrations
                     b.Property<Guid?>("ConnectionEntityId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("DestinationStopId")
+                    b.Property<Guid?>("DestinationStopId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("DestinationStopName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("PassengerId")
+                    b.Property<Guid?>("PassangerId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Price")
@@ -258,8 +254,8 @@ namespace TransportIS.DAL.Migrations
                     b.Property<int>("SeatCount")
                         .HasColumnType("int");
 
-                    b.Property<string>("Type")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

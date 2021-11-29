@@ -6,16 +6,12 @@ namespace TransportIS.BL.Models.DetailModels
     {
         public Guid Id { get; set; }
 
-        public int TravelClass { get; set; }
-
         public string? Price { get; set; }
 
-        public Guid PassangerId { get; set; }
+        public string? BoardingStopName { get; set; }
 
-        public StopListModel BoardingStopId { get; set; } = new StopListModel();
+        public string? DestinationStopName { get; set; }
 
-        public StopListModel DestinationStopId { get; set; } = new StopListModel();
-
-        public PassengerType Type { get; set; }
+        public string? Type { get; set; }
     }
 }

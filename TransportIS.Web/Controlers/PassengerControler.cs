@@ -115,13 +115,33 @@ namespace TransportIS.Web.Controlers
         public PassengerDetailModel Put(Guid id, [FromBody] PassengerDetailModel model)
         {
             var entity = repository.GetEntityById(id);
-            mapper.Map(model, entity);
 
             if (entity != null)
-                repository.Update(entity);
-            repository.SaveChanges();
+            {
+                MapUpdate(model, entity);
 
-            return model;
+                repository.Update(entity);
+                repository.SaveChanges();
+            }
+            return mapper.Map(entity,model);
+        }
+
+        private static void MapUpdate(PassengerDetailModel model, PassengerEntity? entity)
+        {
+            if (model.PhoneNumber != null && model.PhoneNumber != "")
+                entity.PhoneNumber = model.PhoneNumber;
+
+            if (model.Address.Name != null && model.Address.Name != "")
+                entity.Address.Name = model.Address.Name;
+
+            if (model.Address.Surname != null && model.Address.Surname != "")
+                entity.Address.Surname = model.Address.Surname;
+
+            if (model.Address.Address != null && model.Address.Address != "")
+                entity.Address.Address = model.Address.Address;
+
+            if (model.Address.Country != null && model.Address.Country != "")
+                entity.Address.Country = model.Address.Country;
         }
 
         // DELETE api/<ConnectionControler>/5

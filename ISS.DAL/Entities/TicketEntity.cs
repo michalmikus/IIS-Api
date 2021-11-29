@@ -11,19 +11,21 @@ namespace TransportIS.DAL.Entities
 {
     public class TicketEntity : BaseEntity
     {
-        public int? TravelClass { get; set; }
-
         public string? Price { get; set; }
 
         public Guid? ConfirmingEmploeeId { get; set; }
 
-        public Guid? PassangerId { get; set; }
+        public Guid PassengerId { get; set; }
 
-        public Guid? BoardingStopId { get; set; }
+        public Guid BoardingStopId { get; set; }
 
-        public Guid? DestinationStopId { get; set; }
-        
-        public PassengerType Type { get; set; }
+        public string? BoardingStopName { get; set; }
+
+        public Guid DestinationStopId { get; set; }
+
+        public string? DestinationStopName { get; set; }
+
+        public string? Type { get; set; }
 
         public int SeatCount  { get; set; }
     }

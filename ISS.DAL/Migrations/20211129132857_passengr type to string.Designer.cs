@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TransportIS.DAL;
 
@@ -11,9 +12,10 @@ using TransportIS.DAL;
 namespace TransportIS.DAL.Migrations
 {
     [DbContext(typeof(TransportISDbContext))]
-    partial class TransportISDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211129132857_passengr type to string")]
+    partial class passengrtypetostring
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -249,7 +251,7 @@ namespace TransportIS.DAL.Migrations
                     b.Property<string>("DestinationStopName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("PassengerId")
+                    b.Property<Guid?>("PassangerId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Price")

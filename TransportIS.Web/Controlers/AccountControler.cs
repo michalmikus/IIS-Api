@@ -165,13 +165,14 @@ namespace TransportIS.Web.Controlers
 
 
         [HttpPost("sign-out")]
-        public async Task<IActionResult> Logout()
+        public async Task Logout()
         {
             await service.SignOutAsync(HttpContext,
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     new AuthenticationProperties()
                    );
-            return Content((HttpContext.Response.StatusCode = 200).ToString());
+            HttpContext.Response.StatusCode = 200;
+            return;
         }
     }
 }

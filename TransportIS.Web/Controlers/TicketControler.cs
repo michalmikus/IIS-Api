@@ -3,6 +3,7 @@ using TransportIS.BL.Repository.Interfaces;
 using TransportIS.BL.Models.DetailModels;
 using AutoMapper;
 using TransportIS.DAL.Entities;
+using TransportIS.DAL.Enums;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -10,20 +11,28 @@ namespace TransportIS.Web.Controlers
 {
     [Route("api/carrier/{carrierId}/connection/{connectionId}/passenger/{passengerId}/ticket")]
     [ApiController]
-    public class TicketControler : ControllerBase   
+    public class TicketControler : ControllerBase
     {
         private readonly IRepository<TicketEntity> repository;
 
         private readonly IMapper mapper;
         private readonly IRepository<StopEntity> stopRepository;
         private readonly IRepository<ConnectionEntity> connectionRepository;
+        private readonly IRepository<TicketEntity> ticketRepository;
 
-        public TicketControler(IRepository<TicketEntity> repository, IMapper mapper,IRepository<StopEntity> stopRepository, IRepository<ConnectionEntity> connectionRepository)
+        public TicketControler
+            (
+                IRepository<TicketEntity> repository, IMapper mapper,
+                IRepository<StopEntity> stopRepository,
+                IRepository<ConnectionEntity> connectionRepository,
+                IRepository<TicketEntity> ticketRepository
+            )
         {
             this.repository = repository;
             this.mapper = mapper;
             this.stopRepository = stopRepository;
             this.connectionRepository = connectionRepository;
+            this.ticketRepository = ticketRepository;
         }
         // GET: api/<ConnectionControler>
         [HttpGet]
@@ -33,12 +42,22 @@ namespace TransportIS.Web.Controlers
 
             IList<StopListModel> stopListModels = new List<StopListModel>();
 
-            foreach(var stop in currentConnection.Stops)
+            foreach (var stop in currentConnection.Stops)
             {
                 stopListModels.Add(mapper.Map<StopListModel>(stop));
             }
 
             return stopListModels;
+        }
+
+        [HttpGet("all")]
+        public IList<TicketListModel> GetAllTickets(Guid passengerId)
+        {
+            var tickets = ticketRepository.GetQueryable().Where(ticket => ticket.PassengerId == passengerId);
+
+            var projection = mapper.ProjectTo<TicketListModel>(tickets);
+
+            return projection.ToList();
         }
 
         // GET api/<ConnectionControler>/5
@@ -51,9 +70,16 @@ namespace TransportIS.Web.Controlers
 
         // POST api/<ConnectionControler>
         [HttpPost]
-        public TicketDetailModel Post([FromBody] TicketDetailModel model)
+        public TicketDetailModel Post(Guid passengerId,[FromBody] TicketDetailModel model)
         {
-            var result = repository.Insert(mapper.Map<TicketEntity>(model));
+            var boardingStop = stopRepository.GetEntityById(model.BoardingStopId);
+            var destinationStop = stopRepository.GetEntityById(model.DestinationStopId);
+
+            model.PassengerId = passengerId;
+            model.BoardingStopName = boardingStop.Name;
+            model.DestinationStopName = destinationStop.Name;
+            var ahoj = mapper.Map<TicketEntity>(model);
+            var result = repository.Insert(ahoj);
             return mapper.Map<TicketDetailModel>(result);
         }
 
