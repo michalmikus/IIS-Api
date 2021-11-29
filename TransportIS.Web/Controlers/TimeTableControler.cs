@@ -66,13 +66,17 @@ namespace TransportIS.Web.Controlers
         {
             var query = repository.GetQueryable().Where(table => table.ConnectionId == connectionId).ToList();
 
-
             IList<StopListModel> stopList = new List<StopListModel>();
 
             foreach (var time in query)
             {
-                var entity = stopRepository.GetEntityById(time.StopId);
-                stopList.Add(mapper.Map<StopListModel>(entity));
+                if (time.StopId != null)
+                {
+                    var entity = stopRepository.GetEntityById((Guid)time.StopId);
+                    stopList.Add(mapper.Map<StopListModel>(entity));
+                }
+                else
+                    continue;
             }
 
             return stopList;
