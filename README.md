@@ -1,4 +1,4 @@
-Implementácia API v DOTNET 6.
+Implementácia API v .NET 6.
 deploynute na :
 https://transport-is.azurewebsites.net/
 Nakoľko spolupracovníci v tíme nezdieľali moje pracovné nasadenie v tomto projekte až do posledných 5tich dní pred odovzdaním.
