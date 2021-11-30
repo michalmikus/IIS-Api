@@ -1,7 +1,12 @@
-Implementácia API v .NET 6.
-deploynute na :
-https://transport-is.azurewebsites.net/
-Nakoľko spolupracovníci v tíme nezdieľali moje pracovné nasadenie v tomto projekte až do posledných 5tich dní pred odovzdaním.
-Tak frontend trošku zaostáva za backendom.
-frontend:
-https://github.com/michalmikus/IIS-projekt
+Implementácia API v .NET 6.<br/>
+deploynute na :<br/>
+https://transport-is.azurewebsites.net/<br/>
+Účet administrátora: <br/>
+
+Email: admin@transportis.cz <br/>
+Password: Heslo123? <br/>
+
+Nakoľko spolupracovníci v tíme nezdieľali moje pracovné nasadenie v tomto projekte až do posledných 5tich dní pred odovzdaním.<br/>
+Tak frontend trošku zaostáva za backendom.<br/>
+frontend:<br/>
+https://github.com/michalmikus/IIS-projekt<br/>
