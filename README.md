@@ -1,6 +1,6 @@
 Implementácia API v .NET 6.<br/>
 deploynute na :<br/>
-https://transport-is.azurewebsites.net/<br/>
+https://transport-is-fronted.azurewebsites.net//<br/>
 Účet administrátora: <br/>
 
 Email: admin@transportis.cz <br/>
