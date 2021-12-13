@@ -9,6 +9,7 @@ namespace TransportIS.BL.Models.ListModels
 {
     public class VehicleListModel
     {
+        public Guid Id { get; set; }
         public string? Brand { get; set; }
 
         public string? Model { get; set; }

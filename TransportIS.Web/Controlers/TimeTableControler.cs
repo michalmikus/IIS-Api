@@ -96,6 +96,10 @@ namespace TransportIS.Web.Controlers
         {
             model.ConnectionId = connectionId;
             var result = repository.Insert(mapper.Map<TimeTableEntity>(model));
+            result.ConnectionId = connectionId;
+            result.StopId = model.StopId;
+            repository.Update(result);
+            repository.SaveChanges();
             return mapper.Map<TimeTableDetailModel>(result);
         }
 
