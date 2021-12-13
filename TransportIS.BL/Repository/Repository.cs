@@ -27,13 +27,18 @@ namespace TransportIS.BL.Repository
 
         public IQueryable<TEntity> GetQueryable()
         {
+            return AddIncludes(dbSet);
+        }
+
+        public virtual IQueryable<TEntity> AddIncludes(DbSet<TEntity> dbSet)
+        {
             return dbSet;
         }
 
         
         public virtual TEntity? GetEntityById(Guid id)
         {
-            return dbSet.FirstOrDefault(entity => entity.Id == id);
+            return GetQueryable().FirstOrDefault(entity => entity.Id == id);
         }
 
         

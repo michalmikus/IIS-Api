@@ -11,8 +11,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace TransportIS.Web.Controlers
 {
-    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    [Authorize(Roles = "Admin,Carrier")]
     [Route("api/carrier/{carrierId}/vehicles")]
     [ApiController]
     public class VehicleControler : ControllerBase
@@ -26,8 +24,8 @@ namespace TransportIS.Web.Controlers
             this.mapper = mapper;
         }
 
-        [Authorize(Roles = "Admin")]
-        [HttpGet]
+
+        [HttpGet("all")]
         public IList<VehicleListModel> GetAll(Guid carrierId)
         {
             var query = repository.GetQueryable().Where(predicate => predicate.CarrierId == carrierId);
@@ -37,16 +35,6 @@ namespace TransportIS.Web.Controlers
             return projection.ToList();
         }
 
-        // GET: api/<ConnectionControler>
-        [HttpGet]
-        public IList<VehicleListModel> Get(Guid carrierId)
-        {
-            var query = repository.GetQueryable().Where(predicate => predicate.CarrierId == carrierId);
-
-            var projection = mapper.ProjectTo<VehicleListModel>(query);
-
-            return projection.ToList();
-        }
 
         // GET api/<ConnectionControler>/5
         [HttpGet("{id}")]

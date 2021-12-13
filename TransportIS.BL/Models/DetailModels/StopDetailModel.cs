@@ -8,7 +8,7 @@
 
         public string? Location { get; set; }
 
-        public Guid ConnectionId { get; set; }
+        public Guid CarrierId { get; set; }
 
         public Guid ResponsibleEmploeeId  { get; set; }
 

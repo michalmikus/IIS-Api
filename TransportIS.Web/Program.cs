@@ -8,15 +8,27 @@ using TransportIS.BL.Models.ListModels;
 using TransportIS.BL.Repository;
 using TransportIS.BL.Repository.Interfaces;
 using TransportIS.DAL;
+using TransportIS.DAL.Database;
 using TransportIS.DAL.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
 ConfigureServices(builder.Services,builder.Configuration);
+builder.Services.AddApplicationInsightsTelemetry();
+
+
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope()) 
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<SeedDatabase>();
+    await seeder.SeedData();
+}
 
+ 
+
+   
 Configure(app);
 
 app.Run();
@@ -71,7 +83,7 @@ static void ConfigureServices(IServiceCollection services,IConfiguration configu
     
     AddAutoMapper(services);
 
-
+    services.AddTransient<SeedDatabase>();
     
     services.AddControllers();
 

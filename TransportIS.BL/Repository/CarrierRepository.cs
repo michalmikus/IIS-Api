@@ -1,4 +1,5 @@
-﻿using TransportIS.DAL;
+﻿using Microsoft.EntityFrameworkCore;
+using TransportIS.DAL;
 
 namespace TransportIS.BL.Repository
 {
@@ -6,6 +7,11 @@ namespace TransportIS.BL.Repository
     {
         public CarrierRepository(Func<TransportISDbContext> contextProvider) : base(contextProvider)
         {
+        }
+
+        public override IQueryable<CarrierEntity> AddIncludes(DbSet<CarrierEntity> dbSet)
+        {
+            return dbSet.Include(c => c.Connections).Include(c => c.Emploees).Include(c => c.Vehicles);
         }
     }
 }

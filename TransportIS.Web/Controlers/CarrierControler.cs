@@ -18,11 +18,25 @@ namespace TransportIS.Web.Controlers
     {
         private readonly IRepository<CarrierEntity> repository;
         private readonly IMapper mapper;
+        private readonly IRepository<ConnectionEntity> repositoryCon;
+        private readonly IRepository<EmploeeEntity> repositoryEmp;
+        private readonly IRepository<VehicleEntity> repositoryVeh;
+        private readonly IRepository<TimeTableEntity> repositoryTT;
 
-        public CarrierControler(IRepository<CarrierEntity> repository, IMapper mapper)
+        public CarrierControler
+            (
+                IRepository<CarrierEntity> repository, IMapper mapper,
+                IRepository<ConnectionEntity> repositoryCon, IRepository<EmploeeEntity> repositoryEmp,
+                IRepository<VehicleEntity> repositoryVeh, IRepository<TimeTableEntity> repositoryTT
+                
+            )
         {
             this.repository = repository;
             this.mapper = mapper;
+            this.repositoryCon = repositoryCon;
+            this.repositoryEmp = repositoryEmp;
+            this.repositoryVeh = repositoryVeh;
+            this.repositoryTT = repositoryTT;
         }
 
         // GET: api/<ConnectionControler>
@@ -83,6 +97,29 @@ namespace TransportIS.Web.Controlers
         [HttpDelete("{id}")]
         public void Delete(Guid id)
         {
+            var entity = repository.GetEntityById(id);
+
+
+            if (entity != null)
+            {
+                foreach (var connection in entity.Connections)
+                {
+                    foreach(var timetables in connection.Stops)
+                    {
+                        repositoryTT.Delete(timetables.Id);
+                    }
+                    repositoryCon.Delete(connection.Id);
+
+                }
+                foreach (var employee in entity.Emploees)
+                {
+                    repositoryEmp.Delete(employee.Id);
+                }
+                foreach (var vehicle in entity.Vehicles)
+                {
+                    repositoryVeh.Delete(vehicle.Id);
+                }
+            }
             repository.Delete(id);
         }
     }

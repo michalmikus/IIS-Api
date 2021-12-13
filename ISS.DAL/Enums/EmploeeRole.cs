@@ -2,7 +2,8 @@
 {
     public enum EmploeeRole
     {
-        Driver,
+        Vodic,
         Personal,
+        Spravca
     }
 }

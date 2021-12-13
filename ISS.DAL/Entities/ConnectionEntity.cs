@@ -30,7 +30,7 @@ namespace TransportIS.DAL.Entities
 
         public ICollection<EmploeeConnectionAssigment> Emploees { get; set; } = new List<EmploeeConnectionAssigment>();
 
-        public ICollection<StopEntity> Stops { get; set; } = new List<StopEntity>();
+        public ICollection<TimeTableEntity> Stops { get; set; } = new List<TimeTableEntity>();
 
         public ICollection<TicketEntity> Tickets { get; set; } = new List<TicketEntity>();
     }

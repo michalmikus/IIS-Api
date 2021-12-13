@@ -14,7 +14,6 @@ using TransportIS.DAL.Enums;
 
 namespace TransportIS.Web.Controlers
 {
-    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "Admin,Carrier,Emploee")]
     [Route("api/carrier/{carrierId}/employees")]
     [ApiController]
     public class EmploeeControler : ControllerBase
@@ -40,7 +39,6 @@ namespace TransportIS.Web.Controlers
             this.roleManager = roleManager;
         }
         // GET: api/<ConnectionControler>
-        [Authorize(Roles = "Admin,Carrier,Emploee")]
         [HttpGet("all")]
         public IList<EmploeeListModel> GetAll(Guid carrierId)
         {
@@ -89,6 +87,7 @@ namespace TransportIS.Web.Controlers
                 CarrierId = carrierId,
                 Address = registrationDetail.EmployeeModel.Address,
                 UserId = userEntity.Id,
+                FullName = registrationDetail.EmployeeModel.FullName
             };
 
 

@@ -70,10 +70,13 @@ namespace TransportIS.Web.Controlers
         }
 
         // DELETE api/<ConnectionControler>/5
-        [Authorize(Roles =("Admin,Carrier"))]
         [HttpDelete("{id}")]
         public void Delete(Guid id)
         {
+            var entity = repository.GetEntityById(id);
+    
+
+
             repository.Delete(id);
         }
     }

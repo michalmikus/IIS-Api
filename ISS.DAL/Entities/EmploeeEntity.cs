@@ -17,6 +17,8 @@ namespace TransportIS.DAL.Entities
 
         public Guid? CarrierId { get; set; }
 
+        public string? FullName { get; set; }
+
         public Guid UserId { get; set; }
 
         public AddressEntity? Address { get; set; }

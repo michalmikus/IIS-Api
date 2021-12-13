@@ -13,8 +13,12 @@ namespace TransportIS.DAL.Entities
         public string? Name     { get; set; }
         public string? Location { get; set; }
 
+        [ForeignKey(nameof(CarrierId))]
+        public CarrierEntity? Carrier { get; set; }
+        public Guid? CarrierId { get; set; }
+
         public EmploeeEntity? ResponsibleEmploee { get; set; }
 
-        public ICollection<ConnectionEntity> Connections { get; set; } = new List<ConnectionEntity>();
+        public ICollection<TimeTableEntity> Connections { get; set; } = new List<TimeTableEntity>();
     }
 }

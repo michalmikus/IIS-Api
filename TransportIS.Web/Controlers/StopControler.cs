@@ -13,12 +13,16 @@ namespace TransportIS.Web.Controlers
     public class StopControler : ControllerBase
     {
         private readonly IRepository<StopEntity> repository;
+
         private readonly IMapper mapper;
 
-        public StopControler(IRepository<StopEntity> repository, IMapper mapper)
+        private readonly IRepository<TimeTableEntity> timeTableRepository;
+
+        public StopControler(IRepository<StopEntity> repository, IMapper mapper, IRepository<TimeTableEntity> timeTableRepository)
         {
             this.repository = repository;
             this.mapper = mapper;
+            this.timeTableRepository = timeTableRepository;
         }
         // GET: api/<ConnectionControler>
         [HttpGet]
@@ -31,6 +35,31 @@ namespace TransportIS.Web.Controlers
             return projection.ToList();
         }
 
+        [HttpGet("forConnection")]
+        public IList<StopListModel> GetConnectionStops(Guid connectionId)
+        {
+            var stops = timeTableRepository.GetQueryable().Where(table => table.ConnectionId == connectionId);
+
+            IList<StopListModel> stopList = new List<StopListModel>();
+
+            foreach(var stop in stops)
+            {
+                var stopID = stop.StopId.ToString();
+                
+
+                if (stopID != null)
+                {
+                    var stopInConnection = repository.GetEntityById(Guid.Parse(stopID));
+
+                    if (stopInConnection != null)
+                    {
+                        stopList.Add(mapper.Map<StopListModel>(stopInConnection));
+                    }
+                }
+            }
+            return stopList;
+        }
+
         // GET api/<ConnectionControler>/5
         [HttpGet("{id}")]
         public StopDetailModel Get(Guid id)
@@ -41,9 +70,9 @@ namespace TransportIS.Web.Controlers
 
         // POST api/<ConnectionControler>
         [HttpPost]
-        public StopDetailModel Post(Guid connectionId, [FromBody] StopDetailModel model)
+        public StopDetailModel Post(Guid carrierId, [FromBody] StopDetailModel model)
         {
-            model.ConnectionId = connectionId;
+            model.CarrierId = carrierId;
             var result = repository.Insert(mapper.Map<StopEntity>(model));
             return mapper.Map<StopDetailModel>(result);
         }

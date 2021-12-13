@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TransportIS.DAL;
 
@@ -11,9 +12,10 @@ using TransportIS.DAL;
 namespace TransportIS.DAL.Migrations
 {
     [DbContext(typeof(TransportISDbContext))]
-    partial class TransportISDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211130135608_added conId to stop")]
+    partial class addedconIdtostop
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +23,21 @@ namespace TransportIS.DAL.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("ConnectionEntityStopEntity", b =>
+                {
+                    b.Property<Guid>("ConnectionsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("StopsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ConnectionsId", "StopsId");
+
+                    b.HasIndex("StopsId");
+
+                    b.ToTable("ConnectionEntityStopEntity");
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
@@ -129,9 +146,6 @@ namespace TransportIS.DAL.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FullName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("Role")
                         .HasColumnType("int");
 
@@ -197,7 +211,7 @@ namespace TransportIS.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("CarrierId")
+                    b.Property<Guid>("ConnectionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Location")
@@ -210,8 +224,6 @@ namespace TransportIS.DAL.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CarrierId");
 
                     b.HasIndex("ResponsibleEmploeeId");
 
@@ -381,6 +393,21 @@ namespace TransportIS.DAL.Migrations
                     b.ToTable("VehicleEntity");
                 });
 
+            modelBuilder.Entity("ConnectionEntityStopEntity", b =>
+                {
+                    b.HasOne("TransportIS.DAL.Entities.ConnectionEntity", null)
+                        .WithMany()
+                        .HasForeignKey("ConnectionsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TransportIS.DAL.Entities.StopEntity", null)
+                        .WithMany()
+                        .HasForeignKey("StopsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("TransportIS.DAL.CarrierEntity", b =>
                 {
                     b.OwnsOne("TransportIS.DAL.Entities.AddressEntity", "Address", b1 =>
@@ -511,15 +538,9 @@ namespace TransportIS.DAL.Migrations
 
             modelBuilder.Entity("TransportIS.DAL.Entities.StopEntity", b =>
                 {
-                    b.HasOne("TransportIS.DAL.CarrierEntity", "Carrier")
-                        .WithMany()
-                        .HasForeignKey("CarrierId");
-
                     b.HasOne("TransportIS.DAL.Entities.EmploeeEntity", "ResponsibleEmploee")
                         .WithMany()
                         .HasForeignKey("ResponsibleEmploeeId");
-
-                    b.Navigation("Carrier");
 
                     b.Navigation("ResponsibleEmploee");
                 });
@@ -534,11 +555,11 @@ namespace TransportIS.DAL.Migrations
             modelBuilder.Entity("TransportIS.DAL.Entities.TimeTableEntity", b =>
                 {
                     b.HasOne("TransportIS.DAL.Entities.ConnectionEntity", "Connection")
-                        .WithMany("Stops")
+                        .WithMany()
                         .HasForeignKey("ConnectionId");
 
                     b.HasOne("TransportIS.DAL.Entities.StopEntity", "Stop")
-                        .WithMany("Connections")
+                        .WithMany()
                         .HasForeignKey("StopId");
 
                     b.Navigation("Connection");
@@ -566,14 +587,7 @@ namespace TransportIS.DAL.Migrations
                 {
                     b.Navigation("Emploees");
 
-                    b.Navigation("Stops");
-
                     b.Navigation("Tickets");
-                });
-
-            modelBuilder.Entity("TransportIS.DAL.Entities.StopEntity", b =>
-                {
-                    b.Navigation("Connections");
                 });
 #pragma warning restore 612, 618
         }
