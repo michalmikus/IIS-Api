@@ -98,11 +98,12 @@ namespace TransportIS.Web.Controlers
         [HttpDelete("{id}")]
         public void Delete(Guid id)
         {
-            var entity = repository.GetEntityById(id);
+            var timetables = timeTableRepository.GetQueryable().Where(table => table.StopId == id);
 
-            if (entity != null)
+            var list = timetables.ToList();
+            if (list != null)
             {
-                foreach(var timetable in entity.Connections)
+                foreach(var timetable in list)
                 {
                     timeTableRepository.Delete(timetable.Id);
                 }
