@@ -10,6 +10,8 @@ namespace TransportIS.BL.Models.DetailModels
 
         public Guid PassengerId { get; set; }
 
+        public Guid CarrierId { get; set; }
+
         public string? BoardingStopName { get; set; }
         public Guid BoardingStopId { get; set; }
 

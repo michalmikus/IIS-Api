@@ -60,6 +60,16 @@ namespace TransportIS.Web.Controlers
             return projection.ToList();
         }
 
+        [HttpGet("allForCarrier")]
+        public IList<TicketListModel> GetAllTickets(Guid passengerId, Guid carrierId)
+        {
+            var tickets = ticketRepository.GetQueryable().Where(ticket => ticket.CarrierId == carrierId);
+
+            var projection = mapper.ProjectTo<TicketListModel>(tickets);
+
+            return projection.ToList();
+        }
+
         // GET api/<ConnectionControler>/5
         [HttpGet("{id}")]
         public TicketDetailModel Get(Guid id)
@@ -70,7 +80,7 @@ namespace TransportIS.Web.Controlers
 
         // POST api/<ConnectionControler>
         [HttpPost]
-        public TicketDetailModel Post(Guid passengerId,[FromBody] TicketDetailModel model)
+        public TicketDetailModel Post(Guid passengerId, Guid carrierId,[FromBody] TicketDetailModel model)
         {
             var boardingStop = stopRepository.GetEntityById(model.BoardingStopId);
             var destinationStop = stopRepository.GetEntityById(model.DestinationStopId);
@@ -78,8 +88,10 @@ namespace TransportIS.Web.Controlers
             model.PassengerId = passengerId;
             model.BoardingStopName = boardingStop.Name;
             model.DestinationStopName = destinationStop.Name;
-            var ahoj = mapper.Map<TicketEntity>(model);
-            var result = repository.Insert(ahoj);
+            model.CarrierId = carrierId;
+             
+            var entity = mapper.Map<TicketEntity>(model);
+            var result = repository.Insert(entity);
             return mapper.Map<TicketDetailModel>(result);
         }
 
