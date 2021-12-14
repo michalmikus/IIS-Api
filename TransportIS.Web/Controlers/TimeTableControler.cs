@@ -92,14 +92,29 @@ namespace TransportIS.Web.Controlers
 
         // POST api/<ConnectionControler>
         [HttpPost("{connectionId}")]
-        public TimeTableDetailModel Post(Guid connectionId,[FromBody] TimeTableDetailModel model)
+        public TimeTableDetailModel Post(Guid connectionId,[FromBody] StopTimeDetailModel stopTimeModel)
         {
+            TimeTableDetailModel model = new();
             model.ConnectionId = connectionId;
+            model.TimeOfDeparture = DateTime.Parse( stopTimeModel.TimeOfDeparture );
+            model.StopId = stopTimeModel.StopId;
+
             var result = repository.Insert(mapper.Map<TimeTableEntity>(model));
+            var uselessConId = result.ConnectionId;
+            var uselessStopId = result.StopId;
             result.ConnectionId = connectionId;
             result.StopId = model.StopId;
+
             repository.Update(result);
             repository.SaveChanges();
+
+            if (result != null)
+            {
+                connectionRepository.Delete(Guid.Parse(uselessConId.ToString()));
+                stopRepository.Delete(Guid.Parse(uselessStopId.ToString()));
+            }
+
+
             return mapper.Map<TimeTableDetailModel>(result);
         }
 

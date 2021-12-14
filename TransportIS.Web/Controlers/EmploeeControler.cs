@@ -117,8 +117,6 @@ namespace TransportIS.Web.Controlers
                 repository.SaveChanges();
             }
 
-
-
             return model;
         }
 

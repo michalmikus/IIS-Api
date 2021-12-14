@@ -74,7 +74,10 @@ namespace TransportIS.Web.Controlers
         {
             model.CarrierId = carrierId;
             var result = repository.Insert(mapper.Map<StopEntity>(model));
+
             return mapper.Map<StopDetailModel>(result);
+        
+
         }
 
         // PUT api/<ConnectionControler>/5

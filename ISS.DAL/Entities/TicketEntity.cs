@@ -17,6 +17,8 @@ namespace TransportIS.DAL.Entities
 
         public Guid PassengerId { get; set; }
 
+        public Guid CarrierId { get; set; }
+
         public Guid BoardingStopId { get; set; }
 
         public string? BoardingStopName { get; set; }
