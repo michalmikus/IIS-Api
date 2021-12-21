@@ -51,7 +51,7 @@ namespace TransportIS.BL.Repository
 
         public virtual TEntity Update(TEntity entity)
         {
-            entity.Id = dbSet.Update(entity).Entity.Id; 
+            entity.Id = dbSet.Update(entity).Entity.Id;
             return entity;
         }
         

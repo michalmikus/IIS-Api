@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using TransportIS.BL.Definitions;
 using TransportIS.BL.Models.DetailModels;
 using TransportIS.BL.Models.ListModels;
@@ -13,31 +14,31 @@ using TransportIS.DAL.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
-ConfigureServices(builder.Services,builder.Configuration);
+ConfigureServices(builder.Services, builder.Configuration);
 builder.Services.AddApplicationInsightsTelemetry();
 
 
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope()) 
+using (var scope = app.Services.CreateScope())
 {
     var seeder = scope.ServiceProvider.GetRequiredService<SeedDatabase>();
     await seeder.SeedData();
 }
 
- 
 
-   
+
+
 Configure(app);
 
 app.Run();
 
-static void ConfigureServices(IServiceCollection services,IConfiguration configuration)
+static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
 {
     var dbConnectionString = configuration.GetConnectionString("db");
 
-    if(string.IsNullOrEmpty(dbConnectionString))
+    if (string.IsNullOrEmpty(dbConnectionString))
     {
         throw new InvalidOperationException("No connection string.");
     }
@@ -50,6 +51,7 @@ static void ConfigureServices(IServiceCollection services,IConfiguration configu
     .UseSqlServer(dbConnectionString);
 
     services.AddMvc();
+
     services.AddCors();
 
     services.AddTransient(sp => contextOptionsBuilder.Options);
@@ -59,8 +61,7 @@ static void ConfigureServices(IServiceCollection services,IConfiguration configu
        .AddDefaultTokenProviders();
 
 
-    // mozem pridat reozne paths pre rozne situacie addCookie berie options => options.LoginPath = "/sign-in"
-    services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options => 
+    services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
     {
         options.Events.OnRedirectToLogin = context =>
            {
@@ -77,14 +78,14 @@ static void ConfigureServices(IServiceCollection services,IConfiguration configu
 
     services.AddTransient<Func<TransportISDbContext>>(sp => () => sp.GetRequiredService<TransportISDbContext>());
 
-
+    AddSwagger(services);
 
     AddRepositories(services);
-    
+
     AddAutoMapper(services);
 
     services.AddTransient<SeedDatabase>();
-    
+
     services.AddControllers();
 
 }
@@ -100,10 +101,12 @@ static void Configure(WebApplication app)
         // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
         app.UseHsts();
     }
-    
-    app.UseCors(builder => {
-        builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); 
+
+    app.UseCors(builder =>
+    {
+        builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
     });
+
 
     app.UseHttpsRedirection();
     app.UseStaticFiles();
@@ -111,8 +114,13 @@ static void Configure(WebApplication app)
     app.UseRouting();
 
     app.UseAuthentication();
-
     app.UseAuthorization();
+
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Transport IS API V1");
+    });
 
     app.UseEndpoints(endpoints => endpoints.MapControllers());
 }
@@ -136,7 +144,8 @@ static IServiceCollection AddAutoMapper(IServiceCollection services)
        .AsSelf()
        .AsImplementedInterfaces());
 
-    services.AddSingleton(provider => {
+    services.AddSingleton(provider =>
+    {
         var instances = provider.GetServices<IMapped>().ToList();
 
         var mapperConfig = new MapperConfiguration(cfg =>
@@ -168,4 +177,39 @@ static IServiceCollection AddAutoMapper(IServiceCollection services)
     });
 
     return services;
+}
+
+static void AddSwagger(IServiceCollection services)
+{
+    //const string ServerUrl = "https://transport-is.azurewebsites.net";
+    const string ServerUrl = "https://localhost:7293";
+
+
+    services
+        .AddSwaggerGen(c =>
+        {
+            c.AddServer(new OpenApiServer
+            {
+                Url = ServerUrl
+            });
+            c.SwaggerDoc("TransportIS API", new OpenApiInfo
+            {
+                Version = "1.0.0",
+                Title = "TransportIS",
+                Description = "Semestral project for IIS.",
+                Contact = new OpenApiContact()
+                {
+                    Name = "Michal Mikus",
+                    Url = new Uri(ServerUrl),
+                    Email = "xmikus18@vutbr.cz"
+                },
+            });
+
+            c.CustomSchemaIds(type => type.FullName);
+            c.EnableAnnotations();
+        });
+
+
+
+
 }

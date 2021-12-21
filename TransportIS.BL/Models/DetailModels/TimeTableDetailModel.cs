@@ -19,5 +19,7 @@ namespace TransportIS.BL.Models.DetailModels
         public string? ConnectionName { get; set; }
 
         public DateTime TimeOfDeparture { get; set; }
+
+
     }
 }

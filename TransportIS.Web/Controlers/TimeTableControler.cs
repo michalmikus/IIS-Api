@@ -82,6 +82,27 @@ namespace TransportIS.Web.Controlers
             return stopList;
         }
 
+        [HttpGet("{startStopId}/{finishStopId}")]
+        public IList<StopListModel> GetConnections(Guid startId, Guid finishId)
+        {
+            var query = repository.GetQueryable().Where(table => table.StopId == startId).ToList();
+
+            IList<StopListModel> stopList = new List<StopListModel>();
+
+            foreach (var time in query)
+            {
+                if (time.StopId != null)
+                {
+                    var entity = stopRepository.GetEntityById((Guid)time.StopId);
+                    stopList.Add(mapper.Map<StopListModel>(entity));
+                }
+                else
+                    continue;
+            }
+
+            return stopList;
+        }
+
         // GET api/<ConnectionControler>/5
         [HttpGet("{id}")]
         public TimeTableDetailModel Get(Guid id)

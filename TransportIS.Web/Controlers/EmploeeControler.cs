@@ -21,6 +21,7 @@ namespace TransportIS.Web.Controlers
 
 
         private readonly IRepository<EmploeeEntity> repository;
+        private readonly IRepository<TicketEntity> ticketRepository;
         private readonly IMapper mapper;
         private readonly UserManager<UserEntity> userManager;
         private readonly RoleManager<RoleEntity> roleManager;
@@ -28,12 +29,14 @@ namespace TransportIS.Web.Controlers
         public EmploeeControler
             (
                 IRepository<EmploeeEntity> repository,
+                IRepository<TicketEntity> ticketRepository,
                 IMapper mapper,
                 UserManager<UserEntity> userManager,
                 RoleManager<RoleEntity> roleManager
             )
         {
             this.repository = repository;
+            this.ticketRepository = ticketRepository;
             this.mapper = mapper;
             this.userManager = userManager;
             this.roleManager = roleManager;
@@ -118,6 +121,21 @@ namespace TransportIS.Web.Controlers
             }
 
             return model;
+        }
+
+        [HttpPut("{employeeId}/ticket/{id}")]
+        public TicketDetailModel Put(Guid employeeId,Guid id, [FromBody] TicketDetailModel model)
+        {
+            var ticket = ticketRepository.GetEntityById(id);
+            
+            if (ticket != null)
+            {
+                ticket.ConfirmingEmploeeId = employeeId;
+                ticketRepository.Update(ticket);
+                ticketRepository.SaveChanges();
+
+            }
+            return mapper.Map<TicketDetailModel>(ticket);
         }
 
         [HttpPut]

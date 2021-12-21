@@ -12,6 +12,8 @@ namespace TransportIS.BL.Models.DetailModels
 
         public string? DestinationStopName { get; set; }
 
+        public Guid? ConfirmingEmploeeId { get; set; }
+
         public string? Type { get; set; }
     }
 }
