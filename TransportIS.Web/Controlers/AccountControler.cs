@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using System.Security.Claims;
 using TransportIS.BL.Models.DetailModels;
@@ -44,6 +45,7 @@ namespace TransportIS.Web.Controlers
         //httpcontext obsahuje user identety a ta ma claimy
 
         [HttpPost("sign-in")]
+        [SwaggerOperation(OperationId = "Account" + nameof(SignInAsync))]
         public async Task<IdentityDetail?> SignInAsync([FromBody] CredentialsDetailModel model)
         {
             var user = await userManager.FindByEmailAsync(model.Email);
@@ -117,7 +119,7 @@ namespace TransportIS.Web.Controlers
             
         }
 
-        public async Task<IList<Claim>> GetClaimsAsync(UserEntity user)
+        private async Task<IList<Claim>> GetClaimsAsync(UserEntity user)
         {
             var role = await userManager.GetRolesAsync(user);
 
@@ -132,6 +134,7 @@ namespace TransportIS.Web.Controlers
         }
 
         [HttpPost("register-admin")]
+        [SwaggerOperation(OperationId = "Account" + nameof(RegisterUserAsync))]
         public async Task<IActionResult> RegisterUserAsync([FromBody] UserDetailModel model)
         {
     
@@ -165,6 +168,7 @@ namespace TransportIS.Web.Controlers
 
 
         [HttpPost("sign-out")]
+        [SwaggerOperation(OperationId = "Account" + nameof(Logout))]
         public async Task Logout()
         {
             await service.SignOutAsync(HttpContext,

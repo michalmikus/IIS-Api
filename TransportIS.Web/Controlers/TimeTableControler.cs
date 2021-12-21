@@ -4,6 +4,7 @@ using TransportIS.BL.Repository.Interfaces;
 using TransportIS.BL.Models.DetailModels;
 using AutoMapper;
 using System.Collections.Generic;
+using AutoMapper.QueryableExtensions;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -82,25 +83,18 @@ namespace TransportIS.Web.Controlers
             return stopList;
         }
 
-        [HttpGet("{startStopId}/{finishStopId}")]
-        public IList<StopListModel> GetConnections(Guid startId, Guid finishId)
+        [HttpGet("search")]
+        public IList<ConnectionDetialModel> GetConnections([FromQuery]string startStop, [FromQuery]string finishStop, [FromQuery]string? dateTime)
         {
-            var query = repository.GetQueryable().Where(table => table.StopId == startId).ToList();
+            var dateFrom = !string.IsNullOrEmpty(dateTime) && DateTime.TryParse(dateTime, out var time) ? time  : DateTime.Now;
 
-            IList<StopListModel> stopList = new List<StopListModel>();
+            var query = connectionRepository.GetQueryable()
+                .Where(c =>
+                    c.Stops.Any(t => t.Stop != null && t.Stop.Name != null && t.Stop.Name.StartsWith(startStop) && t.TimeOfDeparture.TimeOfDay >= dateFrom.TimeOfDay)
+                    && c.Stops.Any(t => t.Stop != null && t.Stop.Name != null && t.Stop.Name.StartsWith(finishStop)));
 
-            foreach (var time in query)
-            {
-                if (time.StopId != null)
-                {
-                    var entity = stopRepository.GetEntityById((Guid)time.StopId);
-                    stopList.Add(mapper.Map<StopListModel>(entity));
-                }
-                else
-                    continue;
-            }
-
-            return stopList;
+            var list = mapper.ProjectTo<ConnectionDetialModel>(query).ToList();
+            return list;
         }
 
         // GET api/<ConnectionControler>/5

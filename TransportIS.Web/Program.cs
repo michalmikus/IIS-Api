@@ -192,7 +192,7 @@ static void AddSwagger(IServiceCollection services)
             {
                 Url = ServerUrl
             });
-            c.SwaggerDoc("TransportIS API", new OpenApiInfo
+            c.SwaggerDoc("v1", new OpenApiInfo
             {
                 Version = "1.0.0",
                 Title = "TransportIS",
