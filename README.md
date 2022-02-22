@@ -11,7 +11,5 @@ Password: Heslo123? <br/>
 Email: user@transportis.cz <br/>
 Password: Heslo123? <br/>
 
-Nakoľko spolupracovníci v tíme nezdieľali moje pracovné nasadenie v tomto projekte až do posledných 5tich dní pred odovzdaním.<br/>
-Tak frontend trošku zaostáva za backendom.<br/>
 frontend:<br/>
 https://github.com/michalmikus/IIS-projekt<br/>
